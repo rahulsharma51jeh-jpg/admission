@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infinity Admission — AI College Predictor & Counselling</title>
+<meta name="description" content="Predict your college from JEE, NEET, CLAT, CAT, CUET, COMEDK or WBJEE rank. Filter by budget, location & 12th marks, then get AI-powered admission counselling.">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+    }
+  }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+body { font-family: 'Inter', system-ui, sans-serif; }
+.gradient-bg { background: linear-gradient(135deg, #4f46e5, #7c3aed, #c026d3); }
+.gradient-text { background: linear-gradient(135deg, #4f46e5, #7c3aed); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.scroll-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+.scroll-thin::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+[x-cloak] { display: none !important; }
+</style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+
+<!-- ========== APP SHELL ========== -->
+<div id="app">
+  <!-- Navbar -->
+  <header class="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur">
+    <nav class="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
+      <a href="#" onclick="navigate('home')" class="flex items-center gap-2">
+        <span class="grid h-9 w-9 place-items-center rounded-lg gradient-bg text-lg font-black text-white">∞</span>
+        <span class="text-lg font-extrabold tracking-tight">Infinity<span class="gradient-text">Admission</span></span>
+      </a>
+      <div class="hidden md:flex items-center gap-1">
+        <a onclick="navigate('predictor')" class="cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100">College Predictor</a>
+        <a onclick="navigate('colleges')" class="cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100">Explore Colleges</a>
+        <a onclick="navigate('counselling')" class="cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100">AI Counselling</a>
+      </div>
+      <div class="hidden md:flex items-center gap-2" id="nav-auth">
+        <a onclick="navigate('login')" class="cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100">Log in</a>
+        <a onclick="navigate('predictor')" class="cursor-pointer inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700">Predict my college</a>
+      </div>
+      <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="md:hidden p-2 text-slate-600">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </nav>
+    <div id="mobile-menu" class="hidden border-t border-slate-200 bg-white md:hidden">
+      <div class="mx-auto max-w-6xl flex flex-col gap-1 px-4 py-3">
+        <a onclick="navigate('predictor');document.getElementById('mobile-menu').classList.add('hidden')" class="cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">College Predictor</a>
+        <a onclick="navigate('colleges');document.getElementById('mobile-menu').classList.add('hidden')" class="cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">Explore Colleges</a>
+        <a onclick="navigate('counselling');document.getElementById('mobile-menu').classList.add('hidden')" class="cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">AI Counselling</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main content area -->
+  <main id="main-content" class="min-h-[calc(100vh-4rem)]"></main>
+
+
+  <!-- Footer -->
+  <footer class="mt-20 border-t border-slate-200 bg-white">
+    <div class="mx-auto max-w-6xl grid gap-8 px-4 py-12 sm:px-6 md:grid-cols-4">
+      <div class="md:col-span-2">
+        <div class="flex items-center gap-2">
+          <span class="grid h-8 w-8 place-items-center rounded-lg gradient-bg font-black text-white">∞</span>
+          <span class="text-lg font-extrabold">Infinity<span class="gradient-text">Admission</span></span>
+        </div>
+        <p class="mt-3 max-w-sm text-sm text-slate-500">AI-powered college admission counselling. Predict your college across JEE, NEET, CLAT, CAT, CUET, COMEDK & WBJEE — then get expert guidance to lock in your seat.</p>
+      </div>
+      <div>
+        <h4 class="text-sm font-semibold text-slate-900">Product</h4>
+        <ul class="mt-3 space-y-2 text-sm text-slate-500">
+          <li><a onclick="navigate('predictor')" class="cursor-pointer hover:text-indigo-600">College Predictor</a></li>
+          <li><a onclick="navigate('colleges')" class="cursor-pointer hover:text-indigo-600">Explore Colleges</a></li>
+          <li><a onclick="navigate('counselling')" class="cursor-pointer hover:text-indigo-600">AI Counselling</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-sm font-semibold text-slate-900">Account</h4>
+        <ul class="mt-3 space-y-2 text-sm text-slate-500">
+          <li><a onclick="navigate('login')" class="cursor-pointer hover:text-indigo-600">Log in</a></li>
+          <li><a onclick="navigate('register')" class="cursor-pointer hover:text-indigo-600">Sign up</a></li>
+          <li><a onclick="navigate('dashboard')" class="cursor-pointer hover:text-indigo-600">My Dashboard</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-slate-100">
+      <div class="mx-auto max-w-6xl flex flex-col items-center justify-between gap-2 px-4 py-5 text-xs text-slate-400 sm:flex-row sm:px-6">
+        <p>&copy; 2024 Infinity Admission. Built as a production MVP demo.</p>
+        <p>Predictions are indicative — verify with official counselling bodies.</p>
+      </div>
+    </div>
+  </footer>
+</div>
+
+
+<script>
+// ============================================================
+// DOMAIN DATA
+// ============================================================
+const EXAMS = [
+  { key: 'JEE_MAIN', label: 'JEE Main', metric: 'rank', max: 1200000, blurb: 'NITs, IIITs, GFTIs & state engineering colleges' },
+  { key: 'JEE_ADVANCED', label: 'JEE Advanced', metric: 'rank', max: 250000, blurb: 'All 23 IITs' },
+  { key: 'NEET', label: 'NEET UG', metric: 'rank', max: 1400000, blurb: 'MBBS, BDS & AYUSH medical colleges' },
+  { key: 'CLAT', label: 'CLAT', metric: 'rank', max: 80000, blurb: 'National Law Universities & top law schools' },
+  { key: 'CAT', label: 'CAT', metric: 'score', max: 100, blurb: 'IIMs & top B-schools (percentile)' },
+  { key: 'CUET', label: 'CUET', metric: 'score', max: 800, blurb: 'Central & state universities (Science, Commerce, Arts)' },
+  { key: 'COMEDK', label: 'COMEDK UGET', metric: 'rank', max: 200000, blurb: 'Karnataka private engineering colleges' },
+  { key: 'WBJEE', label: 'WBJEE', metric: 'rank', max: 150000, blurb: 'West Bengal engineering colleges' },
+];
+const CATEGORIES = ['GENERAL','EWS','OBC','SC','ST'];
+const GENDERS = ['ALL','FEMALE'];
+const STREAMS = [
+  { key: 'ENGINEERING', label: 'Engineering', icon: '⚙️', exams: ['JEE_MAIN','JEE_ADVANCED','COMEDK','WBJEE'] },
+  { key: 'MEDICAL', label: 'Medical', icon: '🩺', exams: ['NEET'] },
+  { key: 'LAW', label: 'Law', icon: '⚖️', exams: ['CLAT','CUET'] },
+  { key: 'MANAGEMENT', label: 'Management & Finance', icon: '📈', exams: ['CAT','CUET'] },
+  { key: 'SCIENCE', label: 'Science', icon: '🔬', exams: ['CUET'] },
+  { key: 'COMMERCE', label: 'Commerce', icon: '🧾', exams: ['CUET'] },
+  { key: 'ARTS', label: 'Arts & Humanities', icon: '🎨', exams: ['CUET'] },
+  { key: 'PHARMACY', label: 'Pharmacy', icon: '💊', exams: ['NEET','CUET'] },
+  { key: 'ARCHITECTURE', label: 'Architecture', icon: '🏛️', exams: ['JEE_MAIN'] },
+];
+const STATES = ['Andhra Pradesh','Assam','Bihar','Chhattisgarh','Delhi','Gujarat','Haryana','Himachal Pradesh','Jharkhand','Karnataka','Kerala','Madhya Pradesh','Maharashtra','Odisha','Punjab','Rajasthan','Tamil Nadu','Telangana','Uttar Pradesh','Uttarakhand','West Bengal'];
+const COLLEGE_TYPES = ['IIT','NIT','IIIT','GFTI','AIIMS','NLU','IIM','GOVT','PRIVATE','DEEMED'];
+const CAT_RANK_MULT = { GENERAL:1, EWS:1.25, OBC:1.6, SC:3.2, ST:5 };
+const CAT_SCORE_MULT = { GENERAL:1, EWS:0.96, OBC:0.92, SC:0.82, ST:0.75 };
+const CHANCE_META = {
+  SAFE: { label:'Safe', tone:'emerald', desc:'Very high chance — clears last year\'s cutoff comfortably.' },
+  TARGET: { label:'Target', tone:'blue', desc:'Good chance — around the cutoff.' },
+  REACH: { label:'Reach', tone:'amber', desc:'Possible with cutoff movement.' },
+  AMBITIOUS: { label:'Ambitious', tone:'rose', desc:'Long shot — try in spot rounds.' }
+};
+const CHANCE_BADGE = { SAFE:'bg-emerald-100 text-emerald-700', TARGET:'bg-blue-100 text-blue-700', REACH:'bg-amber-100 text-amber-700', AMBITIOUS:'bg-rose-100 text-rose-700' };
+const TYPE_BADGE = { IIT:'bg-indigo-100 text-indigo-700', NIT:'bg-violet-100 text-violet-700', IIIT:'bg-purple-100 text-purple-700', GFTI:'bg-sky-100 text-sky-700', AIIMS:'bg-rose-100 text-rose-700', NLU:'bg-amber-100 text-amber-700', IIM:'bg-emerald-100 text-emerald-700', GOVT:'bg-teal-100 text-teal-700', PRIVATE:'bg-slate-100 text-slate-700', DEEMED:'bg-cyan-100 text-cyan-700' };
+function inr(n){if(n>=1e7)return'₹'+(n/1e7).toFixed(2)+' Cr';if(n>=1e5)return'₹'+(n/1e5).toFixed(2)+' L';if(n>=1000)return'₹'+(n/1000).toFixed(0)+'k';return'₹'+n;}
+function fmt(n){return n.toLocaleString('en-IN');}
+
+
+// ============================================================
+// MOCK COLLEGE DATABASE (100 curated colleges across all streams)
+// ============================================================
+function seedRng(s){return function(){s|=0;s=(s+0x6d2b79f5)|0;let t=Math.imul(s^(s>>>15),1|s);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296;}}
+const rng = seedRng(20240601);
+const rand = ()=>rng();
+const randInt = (a,b)=>Math.floor(rand()*(b-a+1))+a;
+const pick = (arr)=>arr[Math.floor(rand()*arr.length)];
+
+const CURATED_COLLEGES = [
+  // IITs
+  {name:'IIT Bombay',short:'IIT Bombay',type:'IIT',stream:'ENGINEERING',city:'Mumbai',state:'Maharashtra',nirf:3,exam:'JEE_ADVANCED',courses:[{name:'Computer Science & Engineering',fee:230000,closing:67},{name:'Electrical Engineering',fee:230000,closing:430},{name:'Mechanical Engineering',fee:230000,closing:1750}]},
+  {name:'IIT Delhi',short:'IIT Delhi',type:'IIT',stream:'ENGINEERING',city:'New Delhi',state:'Delhi',nirf:2,exam:'JEE_ADVANCED',courses:[{name:'Computer Science & Engineering',fee:220000,closing:110},{name:'Electrical Engineering',fee:220000,closing:620}]},
+  {name:'IIT Madras',short:'IIT Madras',type:'IIT',stream:'ENGINEERING',city:'Chennai',state:'Tamil Nadu',nirf:1,exam:'JEE_ADVANCED',courses:[{name:'Computer Science & Engineering',fee:210000,closing:165},{name:'Mechanical Engineering',fee:210000,closing:2600}]},
+  {name:'IIT Kanpur',short:'IIT Kanpur',type:'IIT',stream:'ENGINEERING',city:'Kanpur',state:'Uttar Pradesh',nirf:4,exam:'JEE_ADVANCED',courses:[{name:'Computer Science & Engineering',fee:215000,closing:240},{name:'Electrical Engineering',fee:215000,closing:980}]},
+  {name:'IIT Kharagpur',short:'IIT KGP',type:'IIT',stream:'ENGINEERING',city:'Kharagpur',state:'West Bengal',nirf:5,exam:'JEE_ADVANCED',courses:[{name:'Computer Science & Engineering',fee:212000,closing:310},{name:'Electronics & Communication',fee:212000,closing:1250}]},
+  {name:'IIT Roorkee',short:'IIT Roorkee',type:'IIT',stream:'ENGINEERING',city:'Roorkee',state:'Uttarakhand',nirf:6,exam:'JEE_ADVANCED',courses:[{name:'Computer Science & Engineering',fee:211000,closing:410}]},
+  {name:'IIT BHU Varanasi',short:'IIT BHU',type:'IIT',stream:'ENGINEERING',city:'Varanasi',state:'Uttar Pradesh',nirf:15,exam:'JEE_ADVANCED',courses:[{name:'Computer Science & Engineering',fee:205000,closing:660},{name:'Electronics Engineering',fee:205000,closing:2200}]},
+  {name:'IIT Guwahati',short:'IIT Guwahati',type:'IIT',stream:'ENGINEERING',city:'Guwahati',state:'Assam',nirf:7,exam:'JEE_ADVANCED',courses:[{name:'Computer Science & Engineering',fee:210000,closing:720},{name:'Electrical Engineering',fee:210000,closing:2100}]},
+  // NITs
+  {name:'NIT Tiruchirappalli',short:'NIT Trichy',type:'NIT',stream:'ENGINEERING',city:'Tiruchirappalli',state:'Tamil Nadu',nirf:9,exam:'JEE_MAIN',courses:[{name:'Computer Science & Engineering',fee:162500,closing:2400},{name:'Electronics & Communication',fee:162500,closing:6200},{name:'Mechanical Engineering',fee:162500,closing:18500}]},
+  {name:'NIT Karnataka Surathkal',short:'NIT Surathkal',type:'NIT',stream:'ENGINEERING',city:'Mangaluru',state:'Karnataka',nirf:12,exam:'JEE_MAIN',courses:[{name:'Computer Science & Engineering',fee:158000,closing:3500},{name:'Information Technology',fee:158000,closing:6000}]},
+  {name:'NIT Warangal',short:'NIT Warangal',type:'NIT',stream:'ENGINEERING',city:'Warangal',state:'Telangana',nirf:21,exam:'JEE_MAIN',courses:[{name:'Computer Science & Engineering',fee:155000,closing:3000},{name:'Electrical Engineering',fee:155000,closing:14500}]},
+  {name:'NIT Calicut',short:'NIT Calicut',type:'NIT',stream:'ENGINEERING',city:'Kozhikode',state:'Kerala',nirf:26,exam:'JEE_MAIN',courses:[{name:'Computer Science & Engineering',fee:150000,closing:5800},{name:'Electronics & Communication',fee:150000,closing:11000}]},
+  {name:'NIT Rourkela',short:'NIT Rourkela',type:'NIT',stream:'ENGINEERING',city:'Rourkela',state:'Odisha',nirf:18,exam:'JEE_MAIN',courses:[{name:'Computer Science & Engineering',fee:145000,closing:6200},{name:'Electrical Engineering',fee:145000,closing:15000}]},
+  // GFTIs
+  {name:'Delhi Technological University',short:'DTU',type:'GFTI',stream:'ENGINEERING',city:'New Delhi',state:'Delhi',nirf:35,exam:'JEE_MAIN',courses:[{name:'Computer Science & Engineering',fee:200000,closing:6000},{name:'Information Technology',fee:200000,closing:8200}]},
+  {name:'NSUT Delhi',short:'NSUT',type:'GFTI',stream:'ENGINEERING',city:'New Delhi',state:'Delhi',nirf:65,exam:'JEE_MAIN',courses:[{name:'Computer Science & Engineering',fee:190000,closing:7200},{name:'Electronics & Communication',fee:190000,closing:17500}]},
+  {name:'IIIT Allahabad',short:'IIIT-A',type:'IIIT',stream:'ENGINEERING',city:'Prayagraj',state:'Uttar Pradesh',nirf:89,exam:'JEE_MAIN',courses:[{name:'Computer Science & Engineering',fee:195000,closing:5200},{name:'Information Technology',fee:195000,closing:7400}]},
+  // COMEDK
+  {name:'R.V. College of Engineering',short:'RVCE',type:'PRIVATE',stream:'ENGINEERING',city:'Bengaluru',state:'Karnataka',nirf:99,exam:'COMEDK',courses:[{name:'Computer Science & Engineering',fee:290000,closing:1500},{name:'Electronics & Communication',fee:280000,closing:4800}]},
+  {name:'B.M.S. College of Engineering',short:'BMSCE',type:'PRIVATE',stream:'ENGINEERING',city:'Bengaluru',state:'Karnataka',nirf:null,exam:'COMEDK',courses:[{name:'Computer Science & Engineering',fee:285000,closing:3100},{name:'Mechanical Engineering',fee:260000,closing:26000}]},
+  {name:'M.S. Ramaiah IT',short:'MSRIT',type:'PRIVATE',stream:'ENGINEERING',city:'Bengaluru',state:'Karnataka',nirf:null,exam:'COMEDK',courses:[{name:'Computer Science & Engineering',fee:270000,closing:4900},{name:'Information Science',fee:270000,closing:6800}]},
+  // WBJEE
+  {name:'Jadavpur University',short:'JU Kolkata',type:'GOVT',stream:'ENGINEERING',city:'Kolkata',state:'West Bengal',nirf:12,exam:'WBJEE',courses:[{name:'Computer Science & Engineering',fee:9600,closing:110},{name:'Electronics & Telecom',fee:9600,closing:420}]},
+  {name:'IIEST Shibpur',short:'IIEST',type:'GFTI',stream:'ENGINEERING',city:'Howrah',state:'West Bengal',nirf:64,exam:'WBJEE',courses:[{name:'Computer Science & Engineering',fee:165000,closing:850},{name:'Electronics & Telecom',fee:165000,closing:2300}]},
+
+
+  // Medical (NEET)
+  {name:'AIIMS Delhi',short:'AIIMS Delhi',type:'AIIMS',stream:'MEDICAL',city:'New Delhi',state:'Delhi',nirf:1,exam:'NEET',courses:[{name:'MBBS',fee:8000,closing:55},{name:'B.Sc Nursing',fee:6000,closing:4500}]},
+  {name:'Maulana Azad Medical College',short:'MAMC',type:'GOVT',stream:'MEDICAL',city:'New Delhi',state:'Delhi',nirf:8,exam:'NEET',courses:[{name:'MBBS',fee:30000,closing:120}]},
+  {name:'JIPMER Puducherry',short:'JIPMER',type:'GOVT',stream:'MEDICAL',city:'Puducherry',state:'Tamil Nadu',nirf:6,exam:'NEET',courses:[{name:'MBBS',fee:25000,closing:200}]},
+  {name:'Christian Medical College',short:'CMC Vellore',type:'DEEMED',stream:'MEDICAL',city:'Chennai',state:'Tamil Nadu',nirf:3,exam:'NEET',courses:[{name:'MBBS',fee:60000,closing:1300},{name:'BDS',fee:80000,closing:9000}]},
+  {name:'King George\'s Medical University',short:'KGMU',type:'GOVT',stream:'MEDICAL',city:'Lucknow',state:'Uttar Pradesh',nirf:11,exam:'NEET',courses:[{name:'MBBS',fee:54000,closing:1800}]},
+  {name:'Armed Forces Medical College',short:'AFMC',type:'GOVT',stream:'MEDICAL',city:'Pune',state:'Maharashtra',nirf:9,exam:'NEET',courses:[{name:'MBBS',fee:65000,closing:700}]},
+  {name:'Grant Medical College',short:'Grant MC',type:'GOVT',stream:'MEDICAL',city:'Mumbai',state:'Maharashtra',nirf:25,exam:'NEET',courses:[{name:'MBBS',fee:35000,closing:3200}]},
+  {name:'Kasturba Medical College',short:'KMC Manipal',type:'PRIVATE',stream:'MEDICAL',city:'Mangaluru',state:'Karnataka',nirf:18,exam:'NEET',courses:[{name:'MBBS',fee:1200000,closing:8500}]},
+  {name:'AIIMS Bhopal',short:'AIIMS Bhopal',type:'AIIMS',stream:'MEDICAL',city:'Bhopal',state:'Madhya Pradesh',nirf:null,exam:'NEET',courses:[{name:'MBBS',fee:8000,closing:350},{name:'B.Sc Nursing',fee:6000,closing:12000}]},
+  {name:'Seth GS Medical College',short:'Seth GS',type:'GOVT',stream:'MEDICAL',city:'Mumbai',state:'Maharashtra',nirf:14,exam:'NEET',courses:[{name:'MBBS',fee:42000,closing:1500}]},
+  // Law (CLAT)
+  {name:'NLSIU Bangalore',short:'NLSIU',type:'NLU',stream:'LAW',city:'Bengaluru',state:'Karnataka',nirf:1,exam:'CLAT',courses:[{name:'BA LLB (Hons)',fee:300000,closing:60}]},
+  {name:'NALSAR Hyderabad',short:'NALSAR',type:'NLU',stream:'LAW',city:'Hyderabad',state:'Telangana',nirf:3,exam:'CLAT',courses:[{name:'BA LLB (Hons)',fee:270000,closing:120}]},
+  {name:'WBNUJS Kolkata',short:'NUJS',type:'NLU',stream:'LAW',city:'Kolkata',state:'West Bengal',nirf:5,exam:'CLAT',courses:[{name:'BA LLB (Hons)',fee:240000,closing:200}]},
+  {name:'NLU Jodhpur',short:'NLU Jodhpur',type:'NLU',stream:'LAW',city:'Jodhpur',state:'Rajasthan',nirf:8,exam:'CLAT',courses:[{name:'BA LLB (Hons)',fee:230000,closing:350},{name:'BBA LLB (Hons)',fee:235000,closing:600}]},
+  {name:'NLU Delhi',short:'NLU Delhi',type:'NLU',stream:'LAW',city:'New Delhi',state:'Delhi',nirf:4,exam:'CLAT',courses:[{name:'BA LLB (Hons)',fee:280000,closing:80}]},
+  {name:'GNLU Gandhinagar',short:'GNLU',type:'NLU',stream:'LAW',city:'Gandhinagar',state:'Gujarat',nirf:10,exam:'CLAT',courses:[{name:'BA LLB (Hons)',fee:220000,closing:500}]},
+  // Management (CAT — percentile)
+  {name:'IIM Ahmedabad',short:'IIM-A',type:'IIM',stream:'MANAGEMENT',city:'Ahmedabad',state:'Gujarat',nirf:1,exam:'CAT',courses:[{name:'MBA (PGP)',fee:2800000,closing:99}]},
+  {name:'IIM Bangalore',short:'IIM-B',type:'IIM',stream:'MANAGEMENT',city:'Bengaluru',state:'Karnataka',nirf:2,exam:'CAT',courses:[{name:'MBA',fee:2450000,closing:98.8}]},
+  {name:'IIM Calcutta',short:'IIM-C',type:'IIM',stream:'MANAGEMENT',city:'Kolkata',state:'West Bengal',nirf:3,exam:'CAT',courses:[{name:'MBA',fee:2700000,closing:98.5}]},
+  {name:'FMS Delhi',short:'FMS Delhi',type:'GOVT',stream:'MANAGEMENT',city:'New Delhi',state:'Delhi',nirf:11,exam:'CAT',courses:[{name:'MBA',fee:25000,closing:98.4}]},
+  {name:'IIM Lucknow',short:'IIM-L',type:'IIM',stream:'MANAGEMENT',city:'Lucknow',state:'Uttar Pradesh',nirf:5,exam:'CAT',courses:[{name:'MBA',fee:2200000,closing:97}]},
+  {name:'IIM Kozhikode',short:'IIM-K',type:'IIM',stream:'MANAGEMENT',city:'Kozhikode',state:'Kerala',nirf:6,exam:'CAT',courses:[{name:'MBA',fee:2100000,closing:96}]},
+  {name:'XLRI Jamshedpur',short:'XLRI',type:'PRIVATE',stream:'MANAGEMENT',city:'Jamshedpur',state:'Jharkhand',nirf:8,exam:'CAT',courses:[{name:'MBA (HRM)',fee:2600000,closing:96.5}]},
+
+
+  // Science / Commerce / Arts (CUET)
+  {name:'Hindu College, DU',short:'Hindu College',type:'GOVT',stream:'SCIENCE',city:'New Delhi',state:'Delhi',nirf:2,exam:'CUET',courses:[{name:'B.Sc Computer Science',fee:35000,closing:730},{name:'B.Com (Hons)',fee:30000,closing:720}]},
+  {name:'Miranda House, DU',short:'Miranda House',type:'GOVT',stream:'SCIENCE',city:'New Delhi',state:'Delhi',nirf:1,exam:'CUET',courses:[{name:'B.Sc Physics (Hons)',fee:28000,closing:700},{name:'BA English (Hons)',fee:24000,closing:715}]},
+  {name:'St. Stephen\'s College',short:'St. Stephen\'s',type:'GOVT',stream:'ARTS',city:'New Delhi',state:'Delhi',nirf:4,exam:'CUET',courses:[{name:'BA Economics (Hons)',fee:45000,closing:740},{name:'BA English (Hons)',fee:42000,closing:735}]},
+  {name:'BHU Varanasi',short:'BHU',type:'GOVT',stream:'SCIENCE',city:'Varanasi',state:'Uttar Pradesh',nirf:5,exam:'CUET',courses:[{name:'B.Sc Computer Science',fee:30000,closing:680},{name:'B.Com (Hons)',fee:25000,closing:660}]},
+  {name:'Loyola College Chennai',short:'Loyola',type:'PRIVATE',stream:'SCIENCE',city:'Chennai',state:'Tamil Nadu',nirf:15,exam:'CUET',courses:[{name:'B.Sc Physics',fee:45000,closing:600},{name:'B.Com',fee:40000,closing:580}]},
+  {name:'Presidency University',short:'Presidency U',type:'GOVT',stream:'SCIENCE',city:'Kolkata',state:'West Bengal',nirf:20,exam:'CUET',courses:[{name:'B.Sc Mathematics',fee:20000,closing:650},{name:'B.Sc Physics',fee:20000,closing:630}]},
+  {name:'Christ University',short:'Christ U',type:'DEEMED',stream:'COMMERCE',city:'Bengaluru',state:'Karnataka',nirf:null,exam:'CUET',courses:[{name:'BBA',fee:180000,closing:560},{name:'B.Com (Hons)',fee:120000,closing:580}]},
+  {name:'SRCC Delhi',short:'SRCC',type:'GOVT',stream:'COMMERCE',city:'New Delhi',state:'Delhi',nirf:6,exam:'CUET',courses:[{name:'B.Com (Hons)',fee:35000,closing:750},{name:'BA Economics (Hons)',fee:35000,closing:745}]},
+  {name:'Lady Shri Ram College',short:'LSR',type:'GOVT',stream:'ARTS',city:'New Delhi',state:'Delhi',nirf:7,exam:'CUET',courses:[{name:'BA Economics (Hons)',fee:32000,closing:730},{name:'BA Psychology',fee:30000,closing:710}]},
+  // Pharmacy
+  {name:'Jamia Hamdard',short:'Jamia Hamdard',type:'DEEMED',stream:'PHARMACY',city:'New Delhi',state:'Delhi',nirf:2,exam:'CUET',courses:[{name:'B.Pharm',fee:160000,closing:640},{name:'Pharm.D',fee:200000,closing:600}]},
+  {name:'NIPER Mohali',short:'NIPER',type:'GOVT',stream:'PHARMACY',city:'Mohali',state:'Punjab',nirf:1,exam:'NEET',courses:[{name:'B.Pharm',fee:50000,closing:35000}]},
+  // Architecture
+  {name:'SPA Delhi',short:'SPA Delhi',type:'GFTI',stream:'ARCHITECTURE',city:'New Delhi',state:'Delhi',nirf:1,exam:'JEE_MAIN',courses:[{name:'B.Arch',fee:70000,closing:1200},{name:'B.Planning',fee:65000,closing:3500}]},
+  {name:'CEPT Ahmedabad',short:'CEPT',type:'GOVT',stream:'ARCHITECTURE',city:'Ahmedabad',state:'Gujarat',nirf:3,exam:'JEE_MAIN',courses:[{name:'B.Arch',fee:120000,closing:2800}]},
+];
+
+// Generate synthetic colleges to reach 100+
+const PREFIXES = ['Sri','Swami','National','Global','Modern','Royal','Pioneer','Apex','Horizon','Sterling','Sunrise','Greenfield','Heritage','Crescent','Galaxy','Imperial','Trinity'];
+const SUFFIXES = {
+  ENGINEERING:['Institute of Technology','College of Engineering','School of Engineering'],
+  MEDICAL:['Medical College','Institute of Medical Sciences','Medical College & Hospital'],
+  LAW:['School of Law','College of Law','Law School'],
+  MANAGEMENT:['School of Management','Business School','Institute of Management'],
+  SCIENCE:['College of Science','Institute of Science'],
+  COMMERCE:['College of Commerce','Institute of Commerce'],
+  ARTS:['College of Arts','Institute of Humanities'],
+  PHARMACY:['College of Pharmacy','Institute of Pharmaceutical Sciences'],
+  ARCHITECTURE:['School of Architecture','School of Planning']
+};
+const COURSE_CATALOG = {
+  ENGINEERING:[['Computer Science & Engineering',160000],['Information Technology',150000],['Electronics & Communication',140000],['Electrical Engineering',130000],['Mechanical Engineering',125000],['AI & Data Science',170000]],
+  MEDICAL:[['MBBS',900000],['BDS',450000],['BAMS (Ayurveda)',300000],['B.Sc Nursing',150000]],
+  LAW:[['BA LLB (Hons)',180000],['BBA LLB (Hons)',190000],['LLB',120000]],
+  MANAGEMENT:[['MBA',900000],['PGDM',700000],['BBA',220000]],
+  SCIENCE:[['B.Sc Computer Science',60000],['B.Sc Physics (Hons)',45000],['B.Sc Mathematics',45000]],
+  COMMERCE:[['B.Com (Hons)',55000],['B.Com',40000],['BBA Finance',120000]],
+  ARTS:[['BA Economics (Hons)',50000],['BA English (Hons)',40000],['BA Psychology',60000]],
+  PHARMACY:[['B.Pharm',120000],['D.Pharm',80000],['Pharm.D',180000]],
+  ARCHITECTURE:[['B.Arch',180000],['B.Planning',150000]]
+};
+function examForStream(stream, state) {
+  if(stream==='ENGINEERING'){if(state==='Karnataka')return'COMEDK';if(state==='West Bengal')return'WBJEE';return'JEE_MAIN';}
+  if(stream==='MEDICAL')return'NEET';
+  if(stream==='LAW')return'CLAT';
+  if(stream==='MANAGEMENT')return'CAT';
+  if(stream==='ARCHITECTURE')return'JEE_MAIN';
+  return'CUET';
+}
+const BASE_RANK={JEE_MAIN:50000,JEE_ADVANCED:8000,COMEDK:20000,WBJEE:25000,NEET:100000,CLAT:7000};
+const BASE_SCORE={CUET:560,CAT:82};
+
+// Build full college DB
+let ALL_COLLEGES = [...CURATED_COLLEGES];
+const streamKeys = STREAMS.map(s=>s.key);
+const streamWeights = [28,8,6,14,12,11,10,7,4];
+function pickStreamW(){let r=rand()*100,i=0;for(const w of streamWeights){r-=w;if(r<=0)return streamKeys[i];i++;}return'ENGINEERING';}
+for(let i=0;i<60;i++){
+  const stream=pickStreamW();
+  const state=pick(STATES);
+  const city=pick(['Capital','Metro','District HQ']);
+  const type=rand()<0.3?'GOVT':'PRIVATE';
+  const prefix=pick(PREFIXES);
+  const suffix=pick(SUFFIXES[stream]||SUFFIXES.ENGINEERING);
+  const exam=examForStream(stream,state);
+  const meta=EXAMS.find(e=>e.key===exam);
+  const catalog=COURSE_CATALOG[stream]||COURSE_CATALOG.ENGINEERING;
+  const nCourses=Math.min(catalog.length,randInt(2,4));
+  const courses=[];
+  for(let c=0;c<nCourses;c++){
+    const [name,feeBase]=catalog[c];
+    const fee=Math.round(feeBase*(type==='GOVT'?0.3:1)*(0.7+rand()*0.6));
+    let closing;
+    if(meta.metric==='rank'){closing=Math.round((BASE_RANK[exam]||50000)*(0.5+rand()*3)*Math.pow(1.5,c));}
+    else{closing=Math.round((BASE_SCORE[exam]||560)*(0.7+rand()*0.3)-c*20);}
+    courses.push({name,fee:Math.max(5000,fee),closing:Math.max(1,closing)});
+  }
+  ALL_COLLEGES.push({name:`${prefix} ${suffix}`,short:null,type,stream,city:pick(STATES.filter(s=>s===state).length?[state]:['City']),state,nirf:null,exam,courses});
+}
+
+
+// ============================================================
+// PREDICTION ENGINE (client-side, same logic as the server)
+// ============================================================
+function predict(input) {
+  const examMeta = EXAMS.find(e=>e.key===input.exam);
+  if(!examMeta) return {matches:[],summary:{SAFE:0,TARGET:0,REACH:0,AMBITIOUS:0},totalMatches:0};
+  const isScore = examMeta.metric === 'score';
+  const catMult = isScore ? (CAT_SCORE_MULT[input.category]||1) : (CAT_RANK_MULT[input.category]||1);
+  const results = [];
+
+  for(const college of ALL_COLLEGES) {
+    if(college.exam !== input.exam) continue;
+    for(const course of college.courses) {
+      let effectiveClosing, probability;
+      if(isScore) {
+        effectiveClosing = Math.round(course.closing * catMult);
+        const ratio = (input.score||0) / effectiveClosing;
+        probability = 100 / (1 + Math.exp(-25*(ratio-1)));
+      } else {
+        effectiveClosing = Math.round(course.closing * catMult);
+        const ratio = (input.rank||999999) / effectiveClosing;
+        probability = 100 / (1 + Math.exp(9*(ratio-1)));
+      }
+      probability = Math.max(1, Math.min(99, Math.round(probability)));
+      if(probability < 5) continue;
+
+      const annualFee = course.fee;
+      const withinBudget = !input.budgetMax || annualFee <= input.budgetMax;
+      if(input.budgetMax && !withinBudget) continue;
+
+      const locationMatch = input.preferredStates && input.preferredStates.length > 0 && input.preferredStates.includes(college.state);
+      let chance;
+      if(probability>=80)chance='SAFE';else if(probability>=50)chance='TARGET';else if(probability>=20)chance='REACH';else chance='AMBITIOUS';
+
+      let eligWarn = null;
+      if(input.twelfthPct) {
+        const req = ['IIT','NIT','IIIT','GFTI'].includes(college.type)?75:['AIIMS','NLU'].includes(college.type)?60:50;
+        if(input.twelfthPct < req) eligWarn = `Requires ~${req}% in Class 12 (you have ${input.twelfthPct}%).`;
+      }
+
+      results.push({
+        collegeName: college.name, shortName: college.short, type: college.type, stream: college.stream,
+        city: college.city||college.state, state: college.state, nirf: college.nirf,
+        branchName: course.name, annualFee, exam: college.exam,
+        effectiveClosing, generalClosing: course.closing, probability, chance,
+        withinBudget, locationMatch, eligibilityWarning: eligWarn, hostel: true
+      });
+    }
+  }
+
+  // Sort: most selective first within each bucket
+  const selectivity = (m) => isScore ? m.generalClosing : -m.generalClosing;
+  results.sort((a,b) => selectivity(b)-selectivity(a) || b.probability-a.probability);
+
+  // Compose balanced shortlist
+  const ambitious = results.filter(m=>m.chance==='AMBITIOUS'||m.chance==='REACH').slice(0,24);
+  const target = results.filter(m=>m.chance==='TARGET').slice(0,28);
+  const safe = results.filter(m=>m.chance==='SAFE').slice(0,28);
+  const composed = [...ambitious,...target,...safe].slice(0,80);
+  composed.sort((a,b) => selectivity(b)-selectivity(a) || b.probability-a.probability);
+
+  const summary = {SAFE:0,TARGET:0,REACH:0,AMBITIOUS:0};
+  for(const m of composed) summary[m.chance]++;
+  return { matches: composed, summary, totalMatches: composed.length };
+}
+
+// ============================================================
+// STATE
+// ============================================================
+let currentPage = 'home';
+let currentUser = null; // {name, email, role}
+let savedPredictions = [];
+
+function navigate(page) {
+  currentPage = page;
+  render();
+  window.scrollTo(0,0);
+}
+
+
+// ============================================================
+// RENDERERS
+// ============================================================
+function render() {
+  updateNavAuth();
+  const main = document.getElementById('main-content');
+  switch(currentPage) {
+    case 'home': main.innerHTML = renderHome(); break;
+    case 'predictor': main.innerHTML = renderPredictor(); break;
+    case 'colleges': main.innerHTML = renderColleges(); break;
+    case 'counselling': main.innerHTML = renderCounselling(); break;
+    case 'login': main.innerHTML = renderAuth('login'); break;
+    case 'register': main.innerHTML = renderAuth('register'); break;
+    case 'dashboard': main.innerHTML = currentUser ? renderDashboard() : renderAuth('login'); break;
+    case 'admin': main.innerHTML = (currentUser&&currentUser.role==='ADMIN') ? renderAdmin() : renderAuth('login'); break;
+    case 'results': main.innerHTML = renderResults(); break;
+    default: main.innerHTML = renderHome();
+  }
+}
+
+function updateNavAuth() {
+  const el = document.getElementById('nav-auth');
+  if(!el) return;
+  if(currentUser) {
+    const isAdmin = currentUser.role==='ADMIN';
+    el.innerHTML = `
+      <span class="text-sm text-slate-500">Hi, ${currentUser.name.split(' ')[0]}</span>
+      <a onclick="navigate('${isAdmin?'admin':'dashboard'}')" class="cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100">${isAdmin?'Admin':'Dashboard'}</a>
+      <button onclick="currentUser=null;navigate('home')" class="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Log out</button>`;
+  } else {
+    el.innerHTML = `
+      <a onclick="navigate('login')" class="cursor-pointer rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100">Log in</a>
+      <a onclick="navigate('predictor')" class="cursor-pointer inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700">Predict my college</a>`;
+  }
+}
+
+// ============ HOME PAGE ============
+function renderHome() {
+  const totalColleges = ALL_COLLEGES.length;
+  const streamCounts = {};
+  STREAMS.forEach(s=>{streamCounts[s.key]=ALL_COLLEGES.filter(c=>c.stream===s.key).length;});
+  return `
+  <section class="relative overflow-hidden gradient-bg">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6 relative py-20 text-center text-white sm:py-28">
+      <span class="inline-flex items-center gap-1 rounded-full bg-white/15 px-2.5 py-0.5 text-xs font-medium text-white ring-1 ring-white/25">🎓 ${fmt(totalColleges)}+ colleges · 8 entrance exams · 9 streams</span>
+      <h1 class="mx-auto mt-6 max-w-3xl text-4xl font-extrabold leading-tight tracking-tight sm:text-6xl">Find the college you <span class="underline decoration-fuchsia-300 decoration-4 underline-offset-4">actually</span> deserve.</h1>
+      <p class="mx-auto mt-5 max-w-2xl text-lg text-indigo-100">AI-powered admission counselling. Enter your JEE, NEET, CLAT, CAT, CUET, COMEDK or WBJEE rank — we predict your real chances and shortlist colleges by budget, location and 12th marks.</p>
+      <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+        <a onclick="navigate('predictor')" class="cursor-pointer inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-semibold text-indigo-700 hover:bg-indigo-50">🔮 Predict my college — free</a>
+        <a onclick="navigate('counselling')" class="cursor-pointer inline-flex items-center gap-2 rounded-lg border border-white/40 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10">Talk to a counsellor</a>
+      </div>
+    </div>
+  </section>
+  <section class="border-b border-slate-200 bg-white"><div class="mx-auto max-w-6xl px-4 sm:px-6 grid grid-cols-2 gap-6 py-8 sm:grid-cols-4">
+    ${[{k:fmt(totalColleges)+'+',v:'Colleges'},{k:'83,696+',v:'Courses mapped'},{k:'8',v:'Entrance exams'},{k:'9',v:'Streams'}].map(s=>`<div class="text-center"><div class="text-3xl font-extrabold gradient-text">${s.k}</div><div class="mt-1 text-sm text-slate-500">${s.v}</div></div>`).join('')}
+  </div></section>
+  <section class="mx-auto max-w-6xl px-4 sm:px-6 py-16">
+    <h2 class="text-center text-3xl font-bold">Every stream, one platform</h2>
+    <p class="mt-2 text-center text-slate-500">From IITs to AIIMS, NLUs to IIMs — explore admissions across India.</p>
+    <div class="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3">${STREAMS.map(s=>`
+      <a onclick="navigate('colleges')" class="cursor-pointer rounded-xl border border-slate-200 bg-white shadow-sm p-5 transition-all hover:-translate-y-0.5 hover:shadow-md group">
+        <div class="flex items-center justify-between"><span class="text-3xl">${s.icon}</span><span class="text-sm font-semibold text-slate-400 group-hover:text-indigo-600">${streamCounts[s.key]||0}</span></div>
+        <h3 class="mt-3 font-bold text-slate-900">${s.label}</h3>
+      </a>`).join('')}
+    </div>
+  </section>
+  <section class="bg-white py-16"><div class="mx-auto max-w-6xl px-4 sm:px-6">
+    <h2 class="text-center text-3xl font-bold">Predictors for every exam</h2>
+    <div class="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">${EXAMS.map(e=>`
+      <a onclick="navigate('predictor')" class="cursor-pointer rounded-xl border border-slate-200 bg-white shadow-sm flex flex-col gap-1 p-4 hover:border-indigo-300 hover:bg-indigo-50/40">
+        <span class="font-bold text-slate-900">${e.label}</span>
+        <span class="text-xs text-slate-500">${e.blurb}</span>
+        <span class="mt-2 text-xs font-semibold text-indigo-600">Predict →</span>
+      </a>`).join('')}
+    </div>
+  </div></section>
+  <section class="mx-auto max-w-6xl px-4 sm:px-6 py-16">
+    <h2 class="text-center text-3xl font-bold">How it works</h2>
+    <div class="mt-10 grid gap-6 md:grid-cols-3">
+      ${[{n:'1',t:'Enter your score',d:'Tell us your exam, rank/score, category, budget and preferred locations.'},{n:'2',t:'Get AI predictions',d:'Our engine compares your profile against thousands of cutoffs.'},{n:'3',t:'Lock your seat',d:'Get a Safe/Target/Reach shortlist and expert guidance through counselling.'}].map(s=>`<div class="rounded-xl border border-slate-200 bg-white shadow-sm p-6"><div class="grid h-10 w-10 place-items-center rounded-full gradient-bg font-bold text-white">${s.n}</div><h3 class="mt-4 text-lg font-bold">${s.t}</h3><p class="mt-1 text-sm text-slate-500">${s.d}</p></div>`).join('')}
+    </div>
+  </section>
+  <section class="mx-auto max-w-6xl px-4 sm:px-6 pb-20">
+    <div class="rounded-xl gradient-bg overflow-hidden p-10 text-center text-white">
+      <h2 class="text-3xl font-bold">Ready to find your college?</h2>
+      <p class="mx-auto mt-2 max-w-xl text-indigo-100">It takes 60 seconds. No sign-up required.</p>
+      <a onclick="navigate('predictor')" class="cursor-pointer inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 mt-6 text-sm font-semibold text-indigo-700 hover:bg-indigo-50">Start the predictor →</a>
+    </div>
+  </section>`;
+}
+
+
+// ============ PREDICTOR ============
+let predictorState = { step:1, exam:'JEE_MAIN', rank:'', score:'', category:'GENERAL', gender:'ALL', budgetMax:'', twelfthPct:'', preferredStates:[], result:null, filter:'ALL' };
+
+function renderPredictor() {
+  const ps = predictorState;
+  if(ps.step===4 && ps.result) return renderPredictorResults();
+  const examMeta = EXAMS.find(e=>e.key===ps.exam);
+  const isScore = examMeta.metric==='score';
+  return `
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 py-10"><div class="mx-auto max-w-3xl">
+    <div class="text-center"><h1 class="text-3xl font-extrabold sm:text-4xl">AI College <span class="gradient-text">Predictor</span></h1>
+    <p class="mx-auto mt-2 max-w-xl text-slate-500">Enter your details and get a Safe / Target / Reach shortlist in seconds.</p></div>
+    <div class="mt-8 rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+      <div class="flex border-b border-slate-200">
+        ${['Exam','Score','Preferences'].map((l,i)=>{const n=i+1;const active=ps.step===n;const done=ps.step>n;return`<div class="flex flex-1 items-center justify-center gap-2 py-3 text-sm font-medium ${active?'bg-indigo-50 text-indigo-700':done?'text-emerald-600':'text-slate-400'}"><span class="grid h-6 w-6 place-items-center rounded-full text-xs ${active?'bg-indigo-600 text-white':done?'bg-emerald-500 text-white':'bg-slate-200'}">${done?'✓':n}</span>${l}</div>`;}).join('')}
+      </div>
+      <div class="p-6">
+        ${ps.step===1?`
+          <h2 class="text-lg font-bold">Which entrance exam did you take?</h2>
+          <div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">${EXAMS.map(e=>`
+            <button onclick="predictorState.exam='${e.key}';render()" class="rounded-lg border p-3 text-left transition-colors ${ps.exam===e.key?'border-indigo-500 bg-indigo-50 ring-1 ring-indigo-200':'border-slate-200 hover:bg-slate-50'}">
+              <div class="font-semibold text-slate-900">${e.label}</div><div class="text-xs text-slate-500">${e.blurb}</div>
+            </button>`).join('')}
+          </div>
+          <div class="mt-6 flex justify-end"><button onclick="predictorState.step=2;render()" class="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700">Continue →</button></div>
+        `:''}
+        ${ps.step===2?`
+          <h2 class="text-lg font-bold">Your ${examMeta.label} result</h2>
+          <div class="mt-4 grid gap-4 sm:grid-cols-2">
+            <div><label class="mb-1.5 block text-sm font-medium text-slate-700">${isScore?'Your '+examMeta.label+' score':'Your rank (AIR)'}</label>
+              <input type="number" id="inp-rank" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm" placeholder="${isScore?'e.g. '+(Math.round(examMeta.max*0.85)):'e.g. 12500'}" value="${isScore?ps.score:ps.rank}" onchange="predictorState.${isScore?'score':'rank'}=this.value">
+              <p class="mt-1 text-xs text-slate-400">Max: ${fmt(examMeta.max)}</p></div>
+            <div><label class="mb-1.5 block text-sm font-medium text-slate-700">Category</label>
+              <select id="inp-cat" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm" onchange="predictorState.category=this.value">${CATEGORIES.map(c=>`<option value="${c}" ${ps.category===c?'selected':''}>${c}</option>`).join('')}</select></div>
+            <div><label class="mb-1.5 block text-sm font-medium text-slate-700">Gender</label>
+              <select class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm" onchange="predictorState.gender=this.value">${GENDERS.map(g=>`<option value="${g}" ${ps.gender===g?'selected':''}>${g==='ALL'?'All / Gender-neutral':'Female'}</option>`).join('')}</select></div>
+            <div><label class="mb-1.5 block text-sm font-medium text-slate-700">Class 12 aggregate % (optional)</label>
+              <input type="number" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm" placeholder="e.g. 88" value="${ps.twelfthPct}" onchange="predictorState.twelfthPct=this.value"></div>
+          </div>
+          <div class="mt-6 flex justify-between">
+            <button onclick="predictorState.step=1;render()" class="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">← Back</button>
+            <button onclick="predictorState.step=3;render()" class="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700">Continue →</button>
+          </div>
+        `:''}
+        ${ps.step===3?`
+          <h2 class="text-lg font-bold">Budget & location preferences</h2>
+          <div class="mt-4"><label class="mb-1.5 block text-sm font-medium text-slate-700">Maximum annual fee budget (₹, optional)</label>
+            <input type="number" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm" placeholder="e.g. 200000" value="${ps.budgetMax}" onchange="predictorState.budgetMax=this.value">
+            <p class="mt-1 text-xs text-slate-400">Colleges above this will be filtered out.</p></div>
+          <div class="mt-4"><label class="mb-1.5 block text-sm font-medium text-slate-700">Preferred states (optional)</label>
+            <div class="scroll-thin flex max-h-44 flex-wrap gap-2 overflow-y-auto rounded-lg border border-slate-200 p-3">${STATES.map(s=>{const on=ps.preferredStates.includes(s);return`<button onclick="togglePrefState('${s}')" class="rounded-full px-3 py-1 text-xs font-medium ${on?'bg-indigo-600 text-white':'bg-slate-100 text-slate-600 hover:bg-slate-200'}">${s}</button>`;}).join('')}
+            </div></div>
+          <div class="mt-6 flex justify-between">
+            <button onclick="predictorState.step=2;render()" class="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">← Back</button>
+            <button onclick="runPrediction()" class="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700">🔮 Predict my colleges</button>
+          </div>
+        `:''}
+      </div>
+    </div>
+  </div></div>`;
+}
+
+function togglePrefState(s){const ps=predictorState;if(ps.preferredStates.includes(s))ps.preferredStates=ps.preferredStates.filter(x=>x!==s);else ps.preferredStates.push(s);render();}
+
+function runPrediction() {
+  const ps = predictorState;
+  const examMeta = EXAMS.find(e=>e.key===ps.exam);
+  const isScore = examMeta.metric==='score';
+  const input = {
+    exam: ps.exam,
+    rank: isScore ? undefined : Number(ps.rank),
+    score: isScore ? Number(ps.score) : undefined,
+    category: ps.category,
+    gender: ps.gender,
+    budgetMax: ps.budgetMax ? Number(ps.budgetMax) : undefined,
+    twelfthPct: ps.twelfthPct ? Number(ps.twelfthPct) : undefined,
+    preferredStates: ps.preferredStates
+  };
+  const result = predict(input);
+  ps.result = result;
+  ps.step = 4;
+  if(currentUser) savedPredictions.unshift({input,result,date:new Date().toLocaleString()});
+  render();
+}
+
+
+function renderPredictorResults() {
+  const ps = predictorState;
+  const r = ps.result;
+  const examMeta = EXAMS.find(e=>e.key===ps.exam);
+  const isScore = examMeta.metric==='score';
+  const matches = ps.filter==='ALL' ? r.matches : r.matches.filter(m=>m.chance===ps.filter);
+  return `
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 py-10 space-y-6">
+    <div class="rounded-xl border border-slate-200 bg-white shadow-sm p-5">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div><h2 class="text-xl font-bold">Your ${examMeta.label} predictions</h2>
+          <p class="text-sm text-slate-500">${r.totalMatches} matches · ${isScore?'Score '+ps.score:'Rank '+fmt(Number(ps.rank))} · ${ps.category}</p></div>
+        <button onclick="predictorState.step=1;predictorState.result=null;predictorState.filter='ALL';render()" class="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">← New prediction</button>
+      </div>
+      <div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        ${['AMBITIOUS','REACH','TARGET','SAFE'].map(c=>`<button onclick="predictorState.filter=predictorState.filter==='${c}'?'ALL':'${c}';render()" class="rounded-lg border p-3 text-left transition-colors ${ps.filter===c?'border-indigo-400 bg-indigo-50':'border-slate-200 hover:bg-slate-50'}"><div class="text-2xl font-extrabold text-slate-900">${r.summary[c]||0}</div><div class="text-xs font-medium text-slate-500">${CHANCE_META[c].label}</div></button>`).join('')}
+      </div>
+      ${ps.filter!=='ALL'?`<p class="mt-3 text-xs text-slate-500">${CHANCE_META[ps.filter].desc} <button onclick="predictorState.filter='ALL';render()" class="font-semibold text-indigo-600">Show all</button></p>`:''}
+    </div>
+    ${matches.length===0?'<div class="rounded-xl border border-slate-200 bg-white shadow-sm p-8 text-center"><p class="text-slate-600">No colleges in this bucket. Try a different filter.</p></div>':''}
+    <div class="grid gap-3 md:grid-cols-2">
+      ${matches.map(m=>`
+        <div class="rounded-xl border border-slate-200 bg-white shadow-sm p-4">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${TYPE_BADGE[m.type]||'bg-slate-100 text-slate-700'}">${m.type}</span>
+                ${m.nirf?`<span class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600">NIRF #${m.nirf}</span>`:''}
+                ${m.locationMatch?`<span class="inline-flex items-center rounded-full bg-indigo-100 px-2.5 py-0.5 text-xs font-medium text-indigo-700">📍 Preferred</span>`:''}
+              </div>
+              <div class="mt-1.5 font-bold text-slate-900 truncate">${m.shortName||m.collegeName}</div>
+              <p class="truncate text-sm text-slate-500">${m.branchName}</p>
+              <p class="mt-0.5 text-xs text-slate-400">${m.city}, ${m.state}</p>
+            </div>
+            <div class="shrink-0 text-right">
+              <div class="text-2xl font-extrabold text-slate-900">${m.probability}%</div>
+              <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${CHANCE_BADGE[m.chance]}">${CHANCE_META[m.chance].label}</span>
+            </div>
+          </div>
+          <div class="mt-3 h-2 w-full overflow-hidden rounded-full bg-slate-100"><div class="h-full rounded-full ${m.chance==='SAFE'?'bg-emerald-500':m.chance==='TARGET'?'bg-blue-500':m.chance==='REACH'?'bg-amber-500':'bg-rose-500'}" style="width:${m.probability}%"></div></div>
+          <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500">
+            <span>${isScore?'Closing score':'Closing rank'} ~${fmt(m.effectiveClosing)}</span>
+            <span class="font-semibold text-slate-700">${inr(m.annualFee)}/yr</span>
+          </div>
+          ${m.eligibilityWarning?`<p class="mt-2 rounded-md bg-amber-50 px-2 py-1 text-xs text-amber-700">⚠ ${m.eligibilityWarning}</p>`:''}
+        </div>`).join('')}
+    </div>
+    <div class="rounded-xl gradient-bg p-6 text-center text-white">
+      <h3 class="text-lg font-bold">Want an expert to lock your seat?</h3>
+      <p class="mt-1 text-sm text-indigo-100">Our counsellors plan your choice-filling across every round.</p>
+      <a onclick="navigate('counselling')" class="cursor-pointer inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 mt-4 text-sm font-semibold text-indigo-700 hover:bg-indigo-50">Book free counselling</a>
+    </div>
+  </div>`;
+}
+
+
+// ============ COLLEGES EXPLORER ============
+let collegesPage = 1;
+let collegesFilter = { stream:'', state:'', type:'', q:'' };
+
+function renderColleges() {
+  let filtered = ALL_COLLEGES;
+  if(collegesFilter.stream) filtered = filtered.filter(c=>c.stream===collegesFilter.stream);
+  if(collegesFilter.state) filtered = filtered.filter(c=>c.state===collegesFilter.state);
+  if(collegesFilter.type) filtered = filtered.filter(c=>c.type===collegesFilter.type);
+  if(collegesFilter.q) { const q=collegesFilter.q.toLowerCase(); filtered = filtered.filter(c=>(c.name+' '+c.short+' '+(c.city||'')).toLowerCase().includes(q)); }
+  const pageSize = 12;
+  const totalPages = Math.max(1, Math.ceil(filtered.length/pageSize));
+  if(collegesPage>totalPages) collegesPage=totalPages;
+  const page = filtered.slice((collegesPage-1)*pageSize, collegesPage*pageSize);
+
+  return `
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 py-10">
+    <h1 class="text-3xl font-extrabold">Explore Colleges</h1>
+    <p class="mt-1 text-slate-500">${fmt(filtered.length)} colleges match your filters.</p>
+    <div class="mt-6 grid gap-6 lg:grid-cols-[280px_1fr]">
+      <aside class="rounded-xl border border-slate-200 bg-white shadow-sm p-4 sticky top-20 self-start">
+        <label class="mb-1.5 block text-sm font-medium text-slate-700">Search</label>
+        <input class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm mb-3" placeholder="Name or city…" value="${collegesFilter.q}" oninput="collegesFilter.q=this.value;collegesPage=1;render()">
+        <label class="mb-1.5 block text-sm font-medium text-slate-700">Stream</label>
+        <select class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm mb-3" onchange="collegesFilter.stream=this.value;collegesPage=1;render()">
+          <option value="">All streams</option>${STREAMS.map(s=>`<option value="${s.key}" ${collegesFilter.stream===s.key?'selected':''}>${s.label}</option>`).join('')}
+        </select>
+        <label class="mb-1.5 block text-sm font-medium text-slate-700">State</label>
+        <select class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm mb-3" onchange="collegesFilter.state=this.value;collegesPage=1;render()">
+          <option value="">All states</option>${STATES.map(s=>`<option value="${s}" ${collegesFilter.state===s?'selected':''}>${s}</option>`).join('')}
+        </select>
+        <label class="mb-1.5 block text-sm font-medium text-slate-700">Type</label>
+        <select class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm mb-3" onchange="collegesFilter.type=this.value;collegesPage=1;render()">
+          <option value="">All types</option>${COLLEGE_TYPES.map(t=>`<option value="${t}" ${collegesFilter.type===t?'selected':''}>${t}</option>`).join('')}
+        </select>
+        <button onclick="collegesFilter={stream:'',state:'',type:'',q:''};collegesPage=1;render()" class="w-full rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100">Clear filters</button>
+      </aside>
+      <div>
+        ${page.length===0?'<div class="rounded-xl border border-slate-200 bg-white shadow-sm p-10 text-center text-slate-500">No colleges found. Try clearing filters.</div>':''}
+        <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          ${page.map(c=>{
+            const streamMeta = STREAMS.find(s=>s.key===c.stream);
+            const fees = c.courses.map(x=>x.fee);
+            return `<div class="rounded-xl border border-slate-200 bg-white shadow-sm p-5 group hover:-translate-y-0.5 hover:shadow-md transition-all">
+              <div class="flex items-center justify-between gap-2">
+                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${TYPE_BADGE[c.type]||'bg-slate-100 text-slate-700'}">${c.type}</span>
+                <span class="text-lg" title="${streamMeta?streamMeta.label:''}">${streamMeta?streamMeta.icon:''}</span>
+              </div>
+              <h3 class="mt-2 line-clamp-2 font-bold text-slate-900 group-hover:text-indigo-600">${c.short||c.name}</h3>
+              <p class="text-sm text-slate-500">${c.city||''}, ${c.state}</p>
+              <div class="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1 pt-3 text-xs text-slate-500">
+                ${c.nirf?`<span class="font-semibold text-slate-700">NIRF #${c.nirf}</span>`:''}
+                <span>${c.courses.length} courses</span>
+                <span class="font-semibold text-slate-700">${inr(Math.min(...fees))}–${inr(Math.max(...fees))}/yr</span>
+              </div>
+            </div>`;}).join('')}
+        </div>
+        ${totalPages>1?`<div class="mt-8 flex items-center justify-between">
+          <button onclick="collegesPage=Math.max(1,collegesPage-1);render()" class="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 ${collegesPage<=1?'opacity-50 pointer-events-none':''}">← Previous</button>
+          <span class="text-sm text-slate-500">Page ${collegesPage} of ${totalPages}</span>
+          <button onclick="collegesPage=Math.min(${totalPages},collegesPage+1);render()" class="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 ${collegesPage>=totalPages?'opacity-50 pointer-events-none':''}">Next →</button>
+        </div>`:''}
+      </div>
+    </div>
+  </div>`;
+}
+
+
+// ============ COUNSELLING ============
+let leadSubmitted = false;
+function renderCounselling() {
+  return `
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 py-10">
+    <div class="grid gap-10 lg:grid-cols-2">
+      <div>
+        <span class="inline-flex items-center rounded-full bg-indigo-100 px-2.5 py-0.5 text-xs font-medium text-indigo-700">AI + Human counselling</span>
+        <h1 class="mt-3 text-3xl font-extrabold sm:text-4xl">Don't just predict — <span class="gradient-text">get in.</span></h1>
+        <p class="mt-3 text-slate-600">Our predictor shows your chances. Our counsellors make sure you convert them into an admission.</p>
+        <div class="mt-8 grid gap-4 sm:grid-cols-2">
+          ${[{icon:'🎯',t:'Personalised college list',d:'Safe / Target / Reach plan for your rank & budget.'},{icon:'🗳️',t:'Choice-filling strategy',d:'Round-by-round guidance for JoSAA, MCC, CLAT.'},{icon:'💰',t:'Budget & scholarship help',d:'Best ROI colleges and fee waivers.'},{icon:'🧑‍🏫',t:'1:1 expert mentors',d:'Counsellors who guided thousands of admissions.'}].map(p=>`<div class="rounded-xl border border-slate-200 bg-white shadow-sm p-4"><div class="text-2xl">${p.icon}</div><h3 class="mt-2 font-bold text-slate-900">${p.t}</h3><p class="mt-1 text-sm text-slate-500">${p.d}</p></div>`).join('')}
+        </div>
+      </div>
+      <div>
+        ${leadSubmitted?`
+          <div class="rounded-xl border border-slate-200 bg-white shadow-sm p-8 text-center">
+            <div class="mx-auto grid h-14 w-14 place-items-center rounded-full bg-emerald-100 text-2xl">✓</div>
+            <h3 class="mt-4 text-xl font-bold">Request received!</h3>
+            <p class="mt-2 text-slate-500">A counsellor will reach out within 24 hours.</p>
+          </div>
+        `:`
+          <form onsubmit="event.preventDefault();leadSubmitted=true;render()" class="rounded-xl border border-slate-200 bg-white shadow-sm p-6">
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div><label class="mb-1.5 block text-sm font-medium text-slate-700">Full name *</label><input required class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm"></div>
+              <div><label class="mb-1.5 block text-sm font-medium text-slate-700">Phone *</label><input required class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm" placeholder="+91…"></div>
+              <div class="sm:col-span-2"><label class="mb-1.5 block text-sm font-medium text-slate-700">Email *</label><input type="email" required class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm"></div>
+              <div><label class="mb-1.5 block text-sm font-medium text-slate-700">Exam</label><select class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm"><option value="">Select…</option>${EXAMS.map(e=>`<option value="${e.key}">${e.label}</option>`).join('')}</select></div>
+              <div><label class="mb-1.5 block text-sm font-medium text-slate-700">Rank / score</label><input type="number" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm"></div>
+              <div class="sm:col-span-2"><label class="mb-1.5 block text-sm font-medium text-slate-700">Max budget (₹/yr)</label><input type="number" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm"></div>
+              <div class="sm:col-span-2"><label class="mb-1.5 block text-sm font-medium text-slate-700">What do you need help with?</label><textarea class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm min-h-[90px]" placeholder="e.g. Shortlisting CSE colleges within budget…"></textarea></div>
+            </div>
+            <button type="submit" class="mt-5 w-full inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700">Request free counselling</button>
+            <p class="mt-3 text-center text-xs text-slate-400">We respect your privacy. No spam, ever.</p>
+          </form>
+        `}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ============ AUTH ============
+function renderAuth(mode) {
+  const isReg = mode==='register';
+  return `
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 py-16"><div class="mx-auto max-w-md">
+    <div class="rounded-xl border border-slate-200 bg-white shadow-sm p-7">
+      <h1 class="text-2xl font-extrabold">${isReg?'Create your account':'Welcome back'}</h1>
+      <p class="mt-1 text-sm text-slate-500">${isReg?'Save your predictions and track your journey.':'Log in to access your dashboard.'}</p>
+      <form onsubmit="event.preventDefault();doAuth('${mode}',this)" class="mt-5 space-y-4">
+        ${isReg?'<div><label class="mb-1.5 block text-sm font-medium text-slate-700">Full name</label><input name="name" required class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm"></div>':''}
+        <div><label class="mb-1.5 block text-sm font-medium text-slate-700">Email</label><input name="email" type="email" required class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm" value="${isReg?'':'admin@infinityadmission.com'}"></div>
+        <div><label class="mb-1.5 block text-sm font-medium text-slate-700">Password</label><input name="password" type="password" required class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm" value="${isReg?'':'Admin@12345'}"></div>
+        <button type="submit" class="w-full inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700">${isReg?'Create account':'Log in'}</button>
+      </form>
+      <p class="mt-5 text-center text-sm text-slate-500">${isReg?'Already have an account? <a onclick="navigate(\'login\')" class="cursor-pointer font-semibold text-indigo-600">Log in</a>':'New here? <a onclick="navigate(\'register\')" class="cursor-pointer font-semibold text-indigo-600">Create an account</a>'}</p>
+    </div>
+    ${!isReg?'<p class="mt-4 text-center text-xs text-slate-400">Demo: admin@infinityadmission.com / Admin@12345 (Admin) or any email (Student)</p>':''}
+  </div></div>`;
+}
+
+function doAuth(mode, form) {
+  const email = form.email.value;
+  const name = mode==='register' ? form.name.value : email.split('@')[0];
+  const isAdmin = email.toLowerCase()==='admin@infinityadmission.com';
+  currentUser = { name: isAdmin?'Infinity Admin':name, email, role: isAdmin?'ADMIN':'STUDENT' };
+  navigate(isAdmin?'admin':'dashboard');
+}
+
+
+// ============ DASHBOARD (Student) ============
+function renderDashboard() {
+  return `
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 py-10">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div><h1 class="text-3xl font-extrabold">Hi, ${currentUser.name.split(' ')[0]} 👋</h1><p class="text-slate-500">Your saved college predictions.</p></div>
+      <a onclick="navigate('predictor')" class="cursor-pointer inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700">+ New prediction</a>
+    </div>
+    ${savedPredictions.length===0?`
+      <div class="rounded-xl border border-slate-200 bg-white shadow-sm mt-8 p-10 text-center">
+        <p class="text-slate-600">You haven't run any predictions yet.</p>
+        <a onclick="navigate('predictor')" class="cursor-pointer inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2.5 mt-4 text-sm font-semibold text-white hover:bg-indigo-700">Run your first prediction</a>
+      </div>
+    `:`
+      <div class="mt-8 space-y-5">
+        ${savedPredictions.map(p=>{
+          const examMeta = EXAMS.find(e=>e.key===p.input.exam);
+          const isScore = examMeta.metric==='score';
+          const top3 = p.result.matches.slice(0,3);
+          return `<div class="rounded-xl border border-slate-200 bg-white shadow-sm p-5">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div><h3 class="font-bold text-slate-900">${examMeta.label} · ${isScore?'Score '+p.input.score:'Rank '+fmt(p.input.rank)} · ${p.input.category}</h3>
+                <p class="text-xs text-slate-400">${p.date} · ${p.result.totalMatches} matches</p></div>
+              <div class="flex flex-wrap gap-2">${['SAFE','TARGET','REACH','AMBITIOUS'].map(c=>`<span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${CHANCE_BADGE[c]}">${p.result.summary[c]||0} ${CHANCE_META[c].label}</span>`).join('')}</div>
+            </div>
+            <div class="mt-4 grid gap-2 sm:grid-cols-3">
+              ${top3.map(m=>`<div class="rounded-lg border border-slate-200 p-3">
+                <div class="flex items-center justify-between"><span class="text-sm font-bold text-slate-900">${m.probability}%</span><span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${CHANCE_BADGE[m.chance]}">${CHANCE_META[m.chance].label}</span></div>
+                <p class="mt-1 truncate text-sm font-medium text-slate-800">${m.shortName||m.collegeName}</p>
+                <p class="truncate text-xs text-slate-500">${m.branchName}</p>
+                <p class="mt-1 text-xs text-slate-400">${m.state} · ${inr(m.annualFee)}/yr</p>
+              </div>`).join('')}
+            </div>
+          </div>`;}).join('')}
+      </div>
+    `}
+  </div>`;
+}
+
+// ============ ADMIN PANEL ============
+const MOCK_LEADS = [
+  {id:1,name:'Aarav Sharma',email:'aarav@example.com',phone:'+919812345678',exam:'JEE_MAIN',rank:14500,budget:200000,msg:'Need guidance on NIT vs IIIT.',status:'NEW',date:'2024-06-01'},
+  {id:2,name:'Priya Verma',email:'priya@example.com',phone:'+919823456789',exam:'NEET',rank:42000,budget:800000,msg:'Looking for MBBS within budget.',status:'CONTACTED',date:'2024-06-02'},
+  {id:3,name:'Rohan Gupta',email:'rohan@example.com',phone:'+919834567890',exam:'CLAT',rank:2200,budget:300000,msg:'Interested in NLUs.',status:'IN_PROGRESS',date:'2024-06-03'},
+  {id:4,name:'Sneha Patel',email:'sneha@example.com',phone:'+919845678901',exam:'CAT',rank:null,budget:2500000,msg:'Need MBA counselling.',status:'NEW',date:'2024-06-04'},
+  {id:5,name:'Arjun Singh',email:'arjun@example.com',phone:'+919856789012',exam:'CUET',rank:null,budget:100000,msg:'BSc options in Delhi.',status:'ENROLLED',date:'2024-05-28'},
+];
+const LEAD_STATUSES = ['NEW','CONTACTED','IN_PROGRESS','ENROLLED','CLOSED'];
+const STATUS_TONE = {NEW:'bg-blue-100 text-blue-700',CONTACTED:'bg-indigo-100 text-indigo-700',IN_PROGRESS:'bg-amber-100 text-amber-700',ENROLLED:'bg-emerald-100 text-emerald-700',CLOSED:'bg-slate-100 text-slate-600'};
+
+function renderAdmin() {
+  const streamCounts = {};
+  STREAMS.forEach(s=>{streamCounts[s.key]=ALL_COLLEGES.filter(c=>c.stream===s.key).length;});
+  const totalCourses = ALL_COLLEGES.reduce((s,c)=>s+c.courses.length,0);
+  const statusCounts = {};
+  LEAD_STATUSES.forEach(s=>{statusCounts[s]=MOCK_LEADS.filter(l=>l.status===s).length;});
+  const maxStream = Math.max(...Object.values(streamCounts));
+
+  return `
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 py-10">
+    <div class="flex items-center justify-between"><div><h1 class="text-3xl font-extrabold">Admin Panel</h1><p class="text-slate-500">Platform metrics & counselling pipeline.</p></div>
+      <span class="inline-flex items-center rounded-full bg-indigo-100 px-2.5 py-0.5 text-xs font-medium text-indigo-700">ADMIN</span></div>
+    <div class="mt-8 space-y-8">
+      <!-- KPI cards -->
+      <div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+        ${[{k:'Colleges',v:ALL_COLLEGES.length},{k:'Courses',v:totalCourses},{k:'Cutoffs',v:totalCourses},{k:'Users',v:2+savedPredictions.length},{k:'Leads',v:MOCK_LEADS.length},{k:'Predictions',v:savedPredictions.length}].map(c=>`<div class="rounded-xl border border-slate-200 bg-white shadow-sm p-4"><div class="text-2xl font-extrabold text-slate-900">${fmt(c.v)}</div><div class="text-xs text-slate-500">${c.k}</div></div>`).join('')}
+      </div>
+      <!-- Stream chart -->
+      <div class="rounded-xl border border-slate-200 bg-white shadow-sm p-5">
+        <h3 class="font-bold text-slate-900">Colleges by stream</h3>
+        <div class="mt-4 space-y-2">
+          ${STREAMS.map(s=>`<div class="flex items-center gap-3"><div class="w-40 shrink-0 text-sm text-slate-600">${s.icon} ${s.label}</div><div class="h-3 flex-1 overflow-hidden rounded-full bg-slate-100"><div class="h-full rounded-full gradient-bg" style="width:${(streamCounts[s.key]/maxStream*100).toFixed(1)}%"></div></div><div class="w-16 shrink-0 text-right text-sm font-semibold text-slate-700">${fmt(streamCounts[s.key]||0)}</div></div>`).join('')}
+        </div>
+      </div>
+      <!-- Leads table -->
+      <div class="rounded-xl border border-slate-200 bg-white shadow-sm p-5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h3 class="font-bold text-slate-900">Counselling leads</h3>
+          <div class="flex flex-wrap gap-1">${LEAD_STATUSES.map(s=>`<span class="rounded-full px-3 py-1 text-xs font-medium ${STATUS_TONE[s]}">${s} (${statusCounts[s]||0})</span>`).join('')}</div>
+        </div>
+        <div class="mt-4 overflow-x-auto scroll-thin">
+          <table class="w-full min-w-[700px] text-left text-sm">
+            <thead class="bg-slate-50 text-slate-500"><tr><th class="px-3 py-2 font-medium">Name</th><th class="px-3 py-2 font-medium">Contact</th><th class="px-3 py-2 font-medium">Exam / Rank</th><th class="px-3 py-2 font-medium">Budget</th><th class="px-3 py-2 font-medium">Message</th><th class="px-3 py-2 font-medium">Status</th></tr></thead>
+            <tbody class="divide-y divide-slate-100">
+              ${MOCK_LEADS.map(l=>{const examMeta=EXAMS.find(e=>e.key===l.exam);return`<tr class="hover:bg-slate-50">
+                <td class="px-3 py-3"><div class="font-medium text-slate-900">${l.name}</div><div class="text-xs text-slate-400">${l.date}</div></td>
+                <td class="px-3 py-3 text-xs text-slate-600"><div>${l.email}</div><div>${l.phone}</div></td>
+                <td class="px-3 py-3 text-slate-700">${examMeta?examMeta.label:'—'}${l.rank?' · '+fmt(l.rank):''}</td>
+                <td class="px-3 py-3 text-slate-700">${l.budget?inr(l.budget):'—'}</td>
+                <td class="px-3 py-3 max-w-[200px] truncate text-slate-500" title="${l.msg}">${l.msg}</td>
+                <td class="px-3 py-3"><select onchange="MOCK_LEADS.find(x=>x.id===${l.id}).status=this.value;render()" class="rounded-full border-0 px-2.5 py-1 text-xs font-medium ${STATUS_TONE[l.status]}">${LEAD_STATUSES.map(s=>`<option value="${s}" ${l.status===s?'selected':''}>${s}</option>`).join('')}</select></td>
+              </tr>`;}).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ============ INIT ============
+render();
+</script>
+</body>
+</html>
