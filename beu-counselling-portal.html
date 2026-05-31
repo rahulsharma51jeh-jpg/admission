@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BEU Bihar AI Counselling Predictor</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+  :root { --blue:#2563eb; --indigo:#4f46e5; --bg:#f8fafc; }
+  body { background: var(--bg); color:#171717; }
+  a { text-decoration:none; color:inherit; }
+  .container { max-width:1100px; margin:0 auto; padding:0 20px; }
+  nav { background:#fff; border-bottom:1px solid #e5e7eb; position:sticky; top:0; z-index:50; }
+  .nav-inner { display:flex; align-items:center; justify-content:space-between; height:64px; }
+  .logo { display:flex; align-items:center; gap:8px; font-weight:700; font-size:18px; }
+  .logo .badge { width:32px; height:32px; border-radius:8px; background:linear-gradient(135deg,var(--blue),var(--indigo)); color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; }
+  .nav-links { display:flex; gap:8px; }
+  .btn { padding:10px 18px; border-radius:10px; font-weight:600; cursor:pointer; border:none; font-size:14px; transition:.2s; }
+  .btn-primary { background:var(--blue); color:#fff; }
+  .btn-primary:hover { background:#1d4ed8; }
+  .btn-ghost { background:transparent; color:#4b5563; }
+  .btn-ghost:hover { color:#111; }
+  .btn-grad { background:linear-gradient(90deg,var(--blue),var(--indigo)); color:#fff; box-shadow:0 10px 20px -8px rgba(37,99,235,.6); }
+  .btn-grad:hover { opacity:.92; }
+  .tab-active { background:#dbeafe; color:#1d4ed8; }
+  .tab { background:transparent; color:#4b5563; }
+  .hidden { display:none !important; }
+  .hero { text-align:center; padding:70px 0 50px; }
+  .pill { display:inline-block; padding:8px 16px; background:#dbeafe; color:#1d4ed8; border-radius:999px; font-size:14px; font-weight:600; margin-bottom:20px; }
+  h1.title { font-size:48px; line-height:1.1; margin-bottom:18px; }
+  .grad-text { background:linear-gradient(90deg,var(--blue),var(--indigo)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .subtitle { font-size:19px; color:#4b5563; max-width:720px; margin:0 auto 32px; }
+  .hero-cta { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
+  .btn-lg { padding:15px 30px; font-size:17px; border-radius:12px; }
+  .card { background:#fff; border:1px solid #eef0f3; border-radius:18px; box-shadow:0 1px 3px rgba(0,0,0,.04); padding:28px; }
+  .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin:30px 0 60px; }
+  .stat { background:#fff; border:1px solid #eef0f3; border-radius:14px; padding:22px; text-align:center; }
+  .stat .icon { font-size:28px; }
+  .stat .num { font-size:30px; font-weight:700; }
+  .stat .lbl { font-size:13px; color:#6b7280; margin-top:4px; }
+  .section-title { font-size:28px; font-weight:700; text-align:center; margin:30px 0 36px; }
+  .grid3 { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+  .step { background:#fff; border:1px solid #eef0f3; border-radius:14px; padding:30px; text-align:center; }
+  .step .circle { width:48px; height:48px; border-radius:50%; background:#dbeafe; color:var(--blue); display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:700; margin:0 auto 16px; }
+  label { display:block; font-size:14px; font-weight:600; color:#374151; margin-bottom:6px; }
+  input, select { width:100%; padding:13px 16px; border:1px solid #d1d5db; border-radius:12px; font-size:15px; outline:none; }
+  input:focus, select:focus { border-color:var(--blue); box-shadow:0 0 0 3px rgba(37,99,235,.15); }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  .row-gap { margin-top:18px; }
+  .branch-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:14px; }
+  .chip { padding:9px; border-radius:9px; font-size:13px; font-weight:600; text-align:center; cursor:pointer; background:#f9fafb; border:1px solid #e5e7eb; color:#4b5563; }
+  .chip.sel { background:#dbeafe; border:2px solid #93c5fd; color:#1d4ed8; }
+  .pred { background:#fff; border:1px solid #eef0f3; border-radius:14px; padding:22px; margin-bottom:14px; display:flex; gap:16px; justify-content:space-between; align-items:flex-start; }
+  .prob { flex:0 0 auto; width:84px; height:84px; border-radius:14px; border:2px solid; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .prob .p { font-size:22px; font-weight:700; } .prob .c { font-size:11px; }
+  .p-high { color:#16a34a; background:#f0fdf4; border-color:#bbf7d0; }
+  .p-med { color:#ca8a04; background:#fefce8; border-color:#fde68a; }
+  .p-low { color:#dc2626; background:#fef2f2; border-color:#fecaca; }
+  .tag { display:inline-block; padding:4px 9px; border-radius:6px; font-size:12px; font-weight:600; margin-right:6px; }
+  .tag-blue { background:#eff6ff; color:#1d4ed8; }
+  .tag-h { background:#dcfce7; color:#15803d; } .tag-m { background:#fef9c3; color:#a16207; } .tag-l { background:#f3f4f6; color:#4b5563; }
+  .meta { font-size:12px; color:#6b7280; margin-top:8px; display:flex; gap:16px; flex-wrap:wrap; }
+  .tabs { display:flex; gap:8px; border-bottom:1px solid #e5e7eb; padding-bottom:10px; margin-bottom:22px; flex-wrap:wrap; }
+  .tabs .btn { font-size:14px; }
+  .pdf-drop { border:2px dashed #cbd5e1; border-radius:14px; padding:36px; text-align:center; cursor:pointer; transition:.2s; }
+  .pdf-drop:hover { border-color:#93c5fd; }
+  .disclaimer { margin-top:24px; padding:16px; background:#fefce8; border:1px solid #fde68a; border-radius:12px; font-size:14px; color:#854d0e; }
+  footer { background:#0f172a; color:#94a3b8; padding:46px 0; text-align:center; margin-top:50px; }
+  footer .ft { font-size:18px; font-weight:600; color:#fff; margin-bottom:8px; }
+  .toast { position:fixed; top:20px; right:20px; background:#111827; color:#fff; padding:14px 20px; border-radius:10px; z-index:200; opacity:0; transform:translateY(-10px); transition:.3s; font-size:14px; }
+  .toast.show { opacity:1; transform:translateY(0); }
+  .pdf-item { display:flex; justify-content:space-between; align-items:center; padding:14px; background:#f9fafb; border-radius:12px; margin-bottom:10px; }
+  .summary-bar { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:18px; }
+  .mini-stats { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; margin-bottom:26px; }
+  .mini { background:#fff; border:1px solid #eef0f3; border-radius:12px; padding:14px; text-align:center; }
+  .mini .num { font-size:22px; font-weight:700; } .mini .lbl { font-size:11px; color:#6b7280; }
+  @media(max-width:768px){ .stats,.grid3,.grid2,.branch-grid,.mini-stats{grid-template-columns:1fr 1fr;} h1.title{font-size:34px;} }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="container nav-inner">
+    <a href="#" onclick="go('home')" class="logo"><span class="badge">BEU</span> Counselling Predictor</a>
+    <div class="nav-links">
+      <button class="btn btn-primary" onclick="go('predict')">Check Your Rank</button>
+      <button class="btn btn-ghost" onclick="go('admin')">Admin</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ================= HOME ================= -->
+<div id="page-home" class="container">
+  <div class="hero">
+    <span class="pill">AI-Powered Predictions for BEU Bihar</span>
+    <h1 class="title">Know Your College <span class="grad-text">Before Counselling</span></h1>
+    <p class="subtitle">Enter your BCECE rank and get instant AI-powered predictions about which colleges and branches you're most likely to get into, based on previous years' cutoff data.</p>
+    <div class="hero-cta">
+      <button class="btn btn-grad btn-lg" onclick="go('predict')">Predict My Admission</button>
+      <button class="btn btn-lg" style="background:#fff;border:1px solid #d1d5db;color:#374151" onclick="go('admin')">Upload Cutoff Data (Admin)</button>
+    </div>
+  </div>
+
+  <div class="stats" id="homeStats"></div>
+
+  <div class="section-title">How It Works</div>
+  <div class="grid3">
+    <div class="step"><div class="circle">1</div><h3>Upload Cutoff PDFs</h3><p style="color:#4b5563;margin-top:8px">Admin uploads previous year cutoff PDFs. Data is auto-extracted in your browser.</p></div>
+    <div class="step"><div class="circle">2</div><h3>Enter Your Rank</h3><p style="color:#4b5563;margin-top:8px">Students enter their BCECE rank and category, with optional branch preferences.</p></div>
+    <div class="step"><div class="circle">3</div><h3>Get Predictions</h3><p style="color:#4b5563;margin-top:8px">AI analyzes historical trends and gives probability scores per college-branch.</p></div>
+  </div>
+</div>
+
+<!-- ================= PREDICT ================= -->
+<div id="page-predict" class="container hidden" style="padding-top:40px">
+  <div class="card">
+    <h1 style="font-size:30px;margin-bottom:6px">Predict Your College Admission</h1>
+    <p style="color:#4b5563;margin-bottom:26px">Enter your BCECE rank to see which colleges and branches you have the best chance of getting into.</p>
+    <div class="grid2">
+      <div><label>Your BCECE Rank *</label><input type="number" id="rank" placeholder="e.g., 5000" min="1"></div>
+      <div><label>Category</label><select id="category"></select></div>
+    </div>
+    <div class="row-gap">
+      <a href="#" onclick="toggleFilters();return false" style="color:var(--blue);font-weight:600;font-size:14px" id="filterToggle">▶ Filter by Preferred Branches (Optional)</a>
+      <div id="branchGrid" class="branch-grid hidden"></div>
+    </div>
+    <button class="btn btn-grad btn-lg" style="width:100%;margin-top:26px" onclick="predict()" id="predictBtn">Get Predictions</button>
+  </div>
+  <div id="results" style="margin-top:30px"></div>
+</div>
+
+<!-- ================= ADMIN ================= -->
+<div id="page-admin" class="container hidden" style="padding-top:40px">
+  <div class="mini-stats" id="adminStats"></div>
+  <div class="tabs">
+    <button class="btn tab-active" id="tab-upload" onclick="adminTab('upload')">📤 Upload PDF</button>
+    <button class="btn tab" id="tab-pdfs" onclick="adminTab('pdfs')">📄 Uploaded PDFs</button>
+    <button class="btn tab" id="tab-manual" onclick="adminTab('manual')">✏️ Manual Entry</button>
+    <button class="btn tab" id="tab-data" onclick="adminTab('data')">📊 All Data</button>
+    <button class="btn btn-ghost" style="margin-left:auto;color:#dc2626" onclick="resetData()">↺ Reset to Sample</button>
+  </div>
+
+  <!-- Upload -->
+  <div id="atab-upload" class="card">
+    <h2 style="font-size:24px;margin-bottom:6px">Upload Cutoff PDF</h2>
+    <p style="color:#4b5563;margin-bottom:22px">Upload BEU Bihar cutoff PDFs. The parser extracts college names, branches and rank data right in your browser.</p>
+    <div class="pdf-drop" onclick="document.getElementById('pdfInput').click()">
+      <input type="file" id="pdfInput" accept=".pdf" class="hidden" onchange="onFile(event)">
+      <div style="font-size:40px">📄</div>
+      <p id="fileLabel" style="font-size:17px;font-weight:600;margin-top:10px">Click to select PDF file</p>
+      <p style="font-size:13px;color:#6b7280;margin-top:4px">Parsed locally — nothing leaves your device</p>
+    </div>
+    <div class="grid2" style="margin-top:18px">
+      <div><label>Year (auto-detected if empty)</label><input type="number" id="upYear" placeholder="e.g., 2023"></div>
+      <div><label>Counselling Round</label><select id="upRound"><option value="1">Round 1</option><option value="2">Round 2</option><option value="3">Round 3</option><option value="4">Round 4 (Spot)</option></select></div>
+    </div>
+    <button class="btn btn-grad btn-lg" style="width:100%;margin-top:22px" onclick="processPdf()" id="upBtn">Upload &amp; Extract Data</button>
+  </div>
+
+  <!-- PDFs list -->
+  <div id="atab-pdfs" class="card hidden">
+    <h2 style="font-size:24px;margin-bottom:18px">Uploaded PDFs</h2>
+    <div id="pdfList"></div>
+  </div>
+
+  <!-- Manual entry -->
+  <div id="atab-manual" class="card hidden">
+    <h2 style="font-size:24px;margin-bottom:6px">Manual Data Entry</h2>
+    <p style="color:#4b5563;margin-bottom:22px">Add cutoff data manually when PDF extraction isn't perfect.</p>
+    <div class="grid2">
+      <div><label>College Name *</label><input id="m_college" placeholder="Bihar College of Engineering, Patna"></div>
+      <div><label>Branch Name *</label><input id="m_branch" placeholder="Computer Science & Engineering"></div>
+      <div><label>Year *</label><input type="number" id="m_year" value="2023"></div>
+      <div><label>Category</label><select id="m_cat"></select></div>
+      <div><label>Opening Rank *</label><input type="number" id="m_open" placeholder="1500"></div>
+      <div><label>Closing Rank *</label><input type="number" id="m_close" placeholder="8000"></div>
+    </div>
+    <button class="btn btn-primary btn-lg" style="margin-top:22px" onclick="addManual()">Add Cutoff Entry</button>
+  </div>
+
+  <!-- All data -->
+  <div id="atab-data" class="card hidden">
+    <h2 style="font-size:24px;margin-bottom:18px">All Cutoff Data</h2>
+    <div id="dataTable" style="overflow:auto"></div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <div class="ft">BEU Bihar Counselling Predictor</div>
+    <p style="font-size:13px;max-width:680px;margin:0 auto">Disclaimer: Predictions are based on historical data and may vary. Actual admission depends on seat availability, counselling rounds and policy changes.</p>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   BEU Counselling Predictor — single-file app
+   Data persisted in localStorage. PDF parsed via pdf.js.
+   ============================================================ */
+pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+const CATEGORIES = ["GENERAL","OBC","SC","ST","EWS","BC"];
+const BRANCH_MAP = {
+  "CSE":"Computer Science & Engineering","CS":"Computer Science & Engineering","COMPUTER":"Computer Science & Engineering",
+  "ECE":"Electronics & Communication Engineering","EC":"Electronics & Communication Engineering",
+  "EEE":"Electrical & Electronics Engineering","EE":"Electrical Engineering","ELECTRICAL":"Electrical Engineering",
+  "ME":"Mechanical Engineering","MECH":"Mechanical Engineering","MECHANICAL":"Mechanical Engineering",
+  "CE":"Civil Engineering","CIVIL":"Civil Engineering","IT":"Information Technology","PE":"Production Engineering"
+};
+
+/* ---------- Sample seed data (15 colleges, realistic cutoffs) ---------- */
+const SEED = {
+  colleges:["Bihar College of Engineering, Patna","Nalanda College of Engineering, Chandi","Muzaffarpur Institute of Technology","Darbhanga College of Engineering","Bhagalpur College of Engineering","Gaya College of Engineering","Motihari College of Engineering","Purnea College of Engineering","Katihar Engineering College","Loknayak Jai Prakash IT, Chapra"],
+  branches:["Computer Science & Engineering","Electronics & Communication Engineering","Electrical Engineering","Mechanical Engineering","Civil Engineering","Information Technology"],
+  // [collegeIdx, branchIdx, year, round, category, open, close]
+  cutoffs:[
+    [0,0,2023,1,"GENERAL",150,2500],[0,0,2022,1,"GENERAL",180,2800],[0,0,2021,1,"GENERAL",200,3000],
+    [0,0,2023,1,"OBC",800,5500],[0,0,2023,1,"SC",2000,12000],[0,0,2023,1,"EWS",500,4000],
+    [0,1,2023,1,"GENERAL",1200,5500],[0,1,2022,1,"GENERAL",1400,6000],[0,5,2023,1,"GENERAL",800,4000],
+    [0,2,2023,1,"GENERAL",2000,8000],[0,3,2023,1,"GENERAL",2500,10000],[0,4,2023,1,"GENERAL",3000,12000],
+    [1,0,2023,1,"GENERAL",2500,8000],[1,0,2022,1,"GENERAL",2800,8500],[1,0,2021,1,"GENERAL",3000,9000],
+    [1,0,2023,1,"OBC",4000,15000],[1,1,2023,1,"GENERAL",5000,15000],[1,2,2023,1,"GENERAL",6000,18000],
+    [1,3,2023,1,"GENERAL",7000,22000],[1,4,2023,1,"GENERAL",8000,25000],
+    [2,0,2023,1,"GENERAL",3000,10000],[2,0,2022,1,"GENERAL",3500,11000],[2,1,2023,1,"GENERAL",6000,18000],
+    [2,2,2023,1,"GENERAL",8000,22000],[2,3,2023,1,"GENERAL",9000,28000],
+    [3,0,2023,1,"GENERAL",5000,15000],[3,0,2022,1,"GENERAL",5500,16000],[3,1,2023,1,"GENERAL",8000,22000],
+    [3,2,2023,1,"GENERAL",10000,28000],[3,3,2023,1,"GENERAL",12000,35000],
+    [4,0,2023,1,"GENERAL",6000,18000],[4,1,2023,1,"GENERAL",10000,25000],[4,2,2023,1,"GENERAL",12000,30000],
+    [5,0,2023,1,"GENERAL",8000,22000],[5,1,2023,1,"GENERAL",12000,28000],[5,2,2023,1,"GENERAL",15000,35000],
+    [6,0,2023,1,"GENERAL",10000,28000],[6,1,2023,1,"GENERAL",15000,35000],[6,3,2023,1,"GENERAL",22000,50000],
+    [7,0,2023,1,"GENERAL",12000,32000],[7,1,2023,1,"GENERAL",18000,40000],
+    [8,0,2023,1,"GENERAL",14000,35000],[8,2,2023,1,"GENERAL",25000,50000],
+    [9,0,2023,1,"GENERAL",15000,38000],[9,2,2023,1,"GENERAL",28000,55000]
+  ]
+};
+
+/* ---------- Storage layer ---------- */
+function db(){ return JSON.parse(localStorage.getItem("beu_db") || "null"); }
+function save(d){ localStorage.setItem("beu_db", JSON.stringify(d)); }
+function seedIfEmpty(){
+  if(db()) return;
+  const d = { cutoffs:[], pdfs:[], predictions:0 };
+  SEED.cutoffs.forEach(c=>{
+    d.cutoffs.push({ college:SEED.colleges[c[0]], branch:SEED.branches[c[1]], year:c[2], round:c[3], category:c[4], open:c[5], close:c[6], src:"seed" });
+  });
+  save(d);
+}
+function resetData(){ if(confirm("Reset all data back to sample seed?")){ localStorage.removeItem("beu_db"); seedIfEmpty(); render(); toast("Reset to sample data"); } }
+
+/* ---------- Navigation ---------- */
+function go(p){
+  ["home","predict","admin"].forEach(x=>document.getElementById("page-"+x).classList.add("hidden"));
+  document.getElementById("page-"+p).classList.remove("hidden");
+  window.scrollTo(0,0);
+  if(p==="admin") render();
+  if(p==="home") renderHome();
+}
+function adminTab(t){
+  ["upload","pdfs","manual","data"].forEach(x=>{
+    document.getElementById("atab-"+x).classList.add("hidden");
+    const b=document.getElementById("tab-"+x); if(b){ b.classList.remove("tab-active"); b.classList.add("tab"); }
+  });
+  document.getElementById("atab-"+t).classList.remove("hidden");
+  const b=document.getElementById("tab-"+t); b.classList.add("tab-active"); b.classList.remove("tab");
+  if(t==="data") renderDataTable();
+  if(t==="pdfs") renderPdfList();
+}
+
+/* ---------- Toast ---------- */
+let toastT;
+function toast(msg){ const el=document.getElementById("toast"); el.textContent=msg; el.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove("show"),2600); }
+
+/* ============================================================
+   PREDICTION ENGINE (statistical, sigmoid-like probability)
+   ============================================================ */
+function predictEngine(rank, category, branches){
+  const d = db();
+  let rows = d.cutoffs.filter(c=>c.category===category);
+  if(branches && branches.length) rows = rows.filter(c=>branches.includes(c.branch));
+  // group by college+branch
+  const groups = {};
+  rows.forEach(c=>{ const k=c.college+"||"+c.branch; (groups[k]=groups[k]||[]).push(c); });
+  const preds=[];
+  for(const k in groups){
+    const recs=groups[k]; const [college,branch]=k.split("||");
+    const closes=recs.map(r=>r.close), opens=recs.map(r=>r.open), years=[...new Set(recs.map(r=>r.year))];
+    const avgClose=mean(closes), maxClose=Math.max(...closes), avgOpen=opens.length?mean(opens):avgClose*0.3;
+    const std=closes.length>1?stdev(closes):avgClose*0.1;
+    const trend=calcTrend(recs);
+    const adjClose=avgClose*(1+trend);
+    const prob=probability(rank,avgOpen,adjClose,maxClose);
+    if(prob>5){
+      preds.push({ college, branch, probability:Math.round(prob*10)/10,
+        confidence:confidence(recs.length,std,avgClose),
+        closes:[...closes].sort((a,b)=>a-b), years:years.sort(), avgClose:Math.round(avgClose),
+        remarks:remarks(rank,avgClose,prob,trend) });
+    }
+  }
+  preds.sort((a,b)=>b.probability-a.probability);
+  d.predictions=(d.predictions||0)+1; save(d);
+  return preds.slice(0,50);
+}
+function probability(rank,avgOpen,adjClose,maxClose){
+  if(rank<=avgOpen) return Math.min(98, 90+(avgOpen-rank)/avgOpen*10);
+  if(rank<=adjClose){ const r=adjClose-avgOpen; const pos=r>0?(rank-avgOpen)/r:0; return 90-pos*40; }
+  const margin=adjClose*0.10;
+  if(rank<=adjClose+margin){ const pos=margin>0?(rank-adjClose)/margin:1; return 50-pos*30; }
+  if(rank<=maxClose*1.2){ const ex=maxClose*1.2-(adjClose+margin); const pos=ex>0?(rank-(adjClose+margin))/ex:1; return Math.max(5,20-pos*15); }
+  return 0;
+}
+function calcTrend(recs){
+  if(recs.length<2) return 0;
+  const s=[...recs].sort((a,b)=>a.year-b.year);
+  const recent=mean(s.slice(-3).map(r=>r.close)), older=mean(s.slice(0,3).map(r=>r.close));
+  if(!older) return 0;
+  return Math.max(-0.2,Math.min(0.2,(recent-older)/older));
+}
+function confidence(n,std,avg){ const cv=avg?std/avg:1; if(n>=3&&cv<0.2)return"HIGH"; if(n>=2&&cv<0.4)return"MEDIUM"; return"LOW"; }
+function remarks(rank,avgClose,prob,trend){
+  let r=[];
+  if(prob>=80)r.push("Very strong chance of admission.");
+  else if(prob>=60)r.push("Good chance of admission.");
+  else if(prob>=40)r.push("Moderate chance. Consider as backup.");
+  else if(prob>=20)r.push("Low chance. May open in later rounds.");
+  else r.push("Very unlikely based on historical data.");
+  if(trend>0.05)r.push("Cutoffs trending upward (easier entry).");
+  else if(trend<-0.05)r.push("Cutoffs trending downward (harder entry).");
+  const diff=Math.round(avgClose-rank);
+  if(diff>0)r.push("Your rank is "+diff+" positions better than avg cutoff.");
+  else if(diff<0)r.push("Your rank is "+Math.abs(diff)+" positions below avg cutoff.");
+  return r.join(" ");
+}
+function mean(a){ return a.reduce((x,y)=>x+y,0)/a.length; }
+function stdev(a){ const m=mean(a); return Math.sqrt(mean(a.map(x=>(x-m)**2))); }
+
+/* ============================================================
+   PREDICT PAGE UI
+   ============================================================ */
+let selectedBranches=[];
+function toggleFilters(){
+  const g=document.getElementById("branchGrid"), t=document.getElementById("filterToggle");
+  if(g.classList.contains("hidden")){ g.classList.remove("hidden"); t.textContent="▼ Hide Branch Preferences"; }
+  else { g.classList.add("hidden"); t.textContent="▶ Filter by Preferred Branches (Optional)"; }
+}
+function renderBranchChips(){
+  const branches=[...new Set(db().cutoffs.map(c=>c.branch))].sort();
+  document.getElementById("branchGrid").innerHTML = branches.map(b=>{
+    const sel=selectedBranches.includes(b)?"sel":"";
+    return `<div class="chip ${sel}" onclick="toggleBranch('${b.replace(/'/g,"\\'")}')">${shortBranch(b)}</div>`;
+  }).join("");
+}
+function shortBranch(b){ for(const k in BRANCH_MAP) if(BRANCH_MAP[k]===b) return k; return b.split(" ")[0]; }
+function toggleBranch(b){ selectedBranches.includes(b)?selectedBranches=selectedBranches.filter(x=>x!==b):selectedBranches.push(b); renderBranchChips(); }
+
+function predict(){
+  const rank=parseInt(document.getElementById("rank").value);
+  const cat=document.getElementById("category").value;
+  if(!rank||rank<=0){ toast("Please enter a valid rank"); return; }
+  const res=predictEngine(rank,cat,selectedBranches);
+  const box=document.getElementById("results");
+  if(!res.length){ box.innerHTML=`<div class="card" style="text-align:center;color:#6b7280">No predictions found for this rank/category. Try a different rank.</div>`; return; }
+  let html=`<div class="card"><div class="summary-bar">
+    <div><h2 style="font-size:22px">Prediction Results</h2>
+    <p style="color:#4b5563">Rank: <b>${rank}</b> | Category: <b>${cat}</b> | Found: <b>${res.length}</b> colleges</p></div>
+    <div><span class="tag tag-h">HIGH &gt;70%</span><span class="tag tag-m">MED 40-70%</span><span class="tag tag-l">LOW &lt;40%</span></div>
+  </div></div>`;
+  html += res.map((p,i)=>{
+    const cls=p.probability>=70?"p-high":p.probability>=40?"p-med":"p-low";
+    const cb=p.confidence==="HIGH"?"tag-h":p.confidence==="MEDIUM"?"tag-m":"tag-l";
+    return `<div class="pred">
+      <div style="flex:1">
+        <div style="font-size:13px;color:#9ca3af;font-family:monospace">#${i+1}</div>
+        <h3 style="font-size:17px;margin:2px 0 8px">${p.college}</h3>
+        <div><span class="tag tag-blue">${p.branch}</span><span class="tag ${cb}">${p.confidence} Confidence</span></div>
+        <p style="font-size:14px;color:#4b5563;margin-top:8px">${p.remarks}</p>
+        <div class="meta"><span>Avg Closing: <b>${p.avgClose}</b></span><span>History: <b>${p.closes.join(", ")}</b></span><span>Years: <b>${p.years.join(", ")}</b></span></div>
+      </div>
+      <div class="prob ${cls}"><span class="p">${p.probability}%</span><span class="c">chance</span></div>
+    </div>`;
+  }).join("");
+  html += `<div class="disclaimer"><b>Disclaimer:</b> Predictions are based on historical data and may vary. Actual results depend on multiple factors.</div>`;
+  box.innerHTML=html;
+}
+
+/* ============================================================
+   PDF PARSING (client-side via pdf.js)
+   ============================================================ */
+let pickedFile=null;
+function onFile(e){ pickedFile=e.target.files[0]||null; document.getElementById("fileLabel").textContent=pickedFile?pickedFile.name:"Click to select PDF file"; }
+
+async function processPdf(){
+  if(!pickedFile){ toast("Please select a PDF file"); return; }
+  const btn=document.getElementById("upBtn"); btn.textContent="Processing PDF..."; btn.disabled=true;
+  try{
+    const buf=await pickedFile.arrayBuffer();
+    const pdf=await pdfjsLib.getDocument({data:buf}).promise;
+    let lines=[];
+    for(let i=1;i<=pdf.numPages;i++){
+      const page=await pdf.getPage(i); const tc=await page.getTextContent();
+      // group items into rows by y position
+      const rows={};
+      tc.items.forEach(it=>{ const y=Math.round(it.transform[5]/4)*4; (rows[y]=rows[y]||[]).push(it.str); });
+      Object.keys(rows).sort((a,b)=>b-a).forEach(y=>lines.push(rows[y].join(" ")));
+    }
+    const year=parseInt(document.getElementById("upYear").value)||detectYear(lines.join(" "));
+    const round=parseInt(document.getElementById("upRound").value);
+    const extracted=parseLines(lines,year,round);
+    const d=db();
+    extracted.forEach(e=>d.cutoffs.push(e));
+    d.pdfs.unshift({ name:pickedFile.name, year:year, round:round, rows:extracted.length, status:extracted.length?"processed":"no data found", at:new Date().toLocaleString() });
+    save(d);
+    toast(`PDF processed! Extracted ${extracted.length} cutoff entries.`);
+    pickedFile=null; document.getElementById("fileLabel").textContent="Click to select PDF file"; document.getElementById("pdfInput").value="";
+    render();
+  }catch(err){ console.error(err); toast("Failed to parse PDF: "+err.message); }
+  btn.textContent="Upload & Extract Data"; btn.disabled=false;
+}
+
+function detectYear(t){ const m=t.match(/20[12]\d/g); return m?Math.max(...m.map(Number)):2023; }
+function detectBranch(t){ const u=t.toUpperCase(); for(const k in BRANCH_MAP){ if(u.includes(k)||u.includes(BRANCH_MAP[k].toUpperCase())) return BRANCH_MAP[k]; } return null; }
+function detectCategory(t){ const l=t.toLowerCase();
+  if(/\bews\b|economically/.test(l))return"EWS"; if(/\bobc\b|backward/.test(l))return"OBC";
+  if(/\bsc\b|scheduled caste/.test(l))return"SC"; if(/\bst\b|scheduled tribe/.test(l))return"ST"; return"GENERAL"; }
+function isCollege(t){ const l=t.toLowerCase(); const ind=["college","institute","university","engineering","polytechnic"].some(x=>l.includes(x)); return ind && !/\d{3,}/.test(t); }
+function cleanCollege(t){ return t.replace(/^\d+\.?\s*/,"").replace(/\s+/g," ").trim(); }
+
+function parseLines(lines,year,round){
+  const out=[]; let college=null;
+  lines.forEach(line=>{
+    line=line.trim(); if(!line) return;
+    if(isCollege(line)){ college=cleanCollege(line); return; }
+    const branch=detectBranch(line);
+    if(branch && college){
+      const nums=(line.match(/\d+/g)||[]).map(Number).filter(n=>n>10&&n<500000);
+      if(nums.length>=2){
+        out.push({ college, branch, year, round, category:detectCategory(line), open:Math.min(nums[0],nums[1]), close:Math.max(nums[0],nums[1]), src:"pdf" });
+      }
+    }
+  });
+  return out;
+}
+
+/* ---------- Manual entry ---------- */
+function addManual(){
+  const college=val("m_college"), branch=val("m_branch");
+  const year=parseInt(val("m_year")), open=parseInt(val("m_open")), close=parseInt(val("m_close"));
+  if(!college||!branch||!year||isNaN(open)||isNaN(close)){ toast("Please fill all required fields"); return; }
+  const d=db(); d.cutoffs.push({ college, branch, year, round:1, category:val("m_cat"), open, close, src:"manual" }); save(d);
+  ["m_college","m_branch","m_open","m_close"].forEach(id=>document.getElementById(id).value="");
+  toast("Cutoff data added!"); render();
+}
+function val(id){ return document.getElementById(id).value.trim(); }
+
+/* ============================================================
+   RENDERING
+   ============================================================ */
+function stats(){
+  const d=db();
+  return { colleges:new Set(d.cutoffs.map(c=>c.college)).size, branches:new Set(d.cutoffs.map(c=>c.branch)).size,
+    cutoffs:d.cutoffs.length, pdfs:d.pdfs.length, predictions:d.predictions||0,
+    years:[...new Set(d.cutoffs.map(c=>c.year))].sort() };
+}
+function renderHome(){
+  const s=stats();
+  document.getElementById("homeStats").innerHTML=
+    statCard("🏫",s.colleges,"Colleges")+statCard("🎓",s.branches,"Branches")+
+    statCard("📊",s.cutoffs,"Cutoff Records")+statCard("🤖",s.predictions,"Predictions Made");
+}
+function statCard(i,n,l){ return `<div class="stat"><div class="icon">${i}</div><div class="num">${n}</div><div class="lbl">${l}</div></div>`; }
+
+function render(){
+  const s=stats();
+  document.getElementById("adminStats").innerHTML=
+    mini(s.colleges,"Colleges")+mini(s.branches,"Branches")+mini(s.cutoffs,"Cutoff Records")+mini(s.pdfs,"PDFs")+mini(s.predictions,"Predictions");
+  renderBranchChips();
+}
+function mini(n,l){ return `<div class="mini"><div class="num">${n}</div><div class="lbl">${l}</div></div>`; }
+
+function renderPdfList(){
+  const d=db(); const box=document.getElementById("pdfList");
+  if(!d.pdfs.length){ box.innerHTML=`<p style="color:#6b7280;text-align:center;padding:20px">No PDFs uploaded yet.</p>`; return; }
+  box.innerHTML=d.pdfs.map((p,i)=>`<div class="pdf-item">
+    <div><b>${p.name}</b><div style="font-size:13px;color:#6b7280;margin-top:3px">Year: ${p.year} · Round: ${p.round} · Extracted: ${p.rows} rows · <span style="color:${p.rows?'#16a34a':'#dc2626'}">${p.status}</span> · ${p.at}</div></div>
+    <button class="btn btn-ghost" style="color:#dc2626" onclick="delPdf(${i})">Delete</button></div>`).join("");
+}
+function delPdf(i){ const d=db(); d.pdfs.splice(i,1); save(d); renderPdfList(); render(); toast("PDF record removed"); }
+
+function renderDataTable(){
+  const d=db(); const rows=[...d.cutoffs].sort((a,b)=>b.year-a.year);
+  document.getElementById("dataTable").innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:14px">
+    <thead><tr style="text-align:left;background:#f9fafb">
+      <th style="padding:10px">College</th><th>Branch</th><th>Year</th><th>Cat</th><th>Open</th><th>Close</th><th>Source</th>
+    </tr></thead><tbody>${rows.map(r=>`<tr style="border-top:1px solid #eef0f3">
+      <td style="padding:9px 10px">${r.college}</td><td>${shortBranch(r.branch)}</td><td>${r.year}</td><td>${r.category}</td><td>${r.open}</td><td>${r.close}</td><td><span style="font-size:11px;color:#6b7280">${r.src}</span></td>
+    </tr>`).join("")}</tbody></table>`;
+}
+
+/* ---------- init ---------- */
+function fillSelect(id){ document.getElementById(id).innerHTML=CATEGORIES.map(c=>`<option>${c}</option>`).join(""); }
+seedIfEmpty();
+fillSelect("category"); fillSelect("m_cat");
+renderHome();
+</script>
+</body>
+</html>
