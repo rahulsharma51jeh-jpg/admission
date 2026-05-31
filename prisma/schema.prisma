@@ -1,0 +1,156 @@
+// Infinity Admission — Prisma schema
+// Local dev uses SQLite for zero-config runnability.
+// For production, switch `provider` to "postgresql" and point DATABASE_URL
+// at a managed Postgres (with read replicas). All models below are written
+// to be portable: enums are modelled as Strings with documented allowed values
+// and array fields are stored as JSON strings.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+/// Platform user. Role drives access control across the app.
+/// role ∈ { STUDENT, COUNSELLOR, ADMIN }
+model User {
+  id           String       @id @default(cuid())
+  email        String       @unique
+  passwordHash String
+  name         String
+  phone        String?
+  role         String       @default("STUDENT")
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  predictions  Prediction[]
+  leads        Lead[]
+
+  @@index([role])
+}
+
+/// A college / institute.
+/// type   ∈ { IIT, NIT, IIIT, GFTI, AIIMS, NLU, IIM, GOVT, PRIVATE, DEEMED }
+/// stream ∈ { ENGINEERING, MEDICAL, LAW, MANAGEMENT, SCIENCE, COMMERCE, ARTS, PHARMACY, ARCHITECTURE }
+model College {
+  id            String   @id @default(cuid())
+  name          String
+  slug          String   @unique
+  shortName     String?
+  type          String
+  stream        String   @default("ENGINEERING")
+  city          String
+  state         String
+  nirfRank      Int?
+  establishedYr Int?
+  website       String?
+  logoUrl       String?
+  description   String?
+  hostel        Boolean  @default(true)
+  // Annual tuition fee band (INR) used for budget filtering.
+  feesMin       Int      @default(0)
+  feesMax       Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  branches Branch[]
+  cutoffs  Cutoff[]
+
+  @@index([state])
+  @@index([type])
+  @@index([stream])
+  @@index([nirfRank])
+}
+
+/// A program/branch offered by a college (e.g. CSE, ECE).
+model Branch {
+  id        String   @id @default(cuid())
+  collegeId String
+  college   College  @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  name      String
+  // degree ∈ { BTECH, BE, BARCH, INTEGRATED }
+  degree    String   @default("BTECH")
+  durationY Int      @default(4)
+  annualFee Int      @default(0)
+  seats     Int      @default(60)
+  cutoffs   Cutoff[]
+
+  @@index([collegeId])
+}
+
+/// Historical closing-rank data — the backbone of the prediction engine.
+/// Stored ONCE per branch at the GENERAL category; the engine derives the
+/// other reservation categories at query time via CATEGORY_*_MULT. This keeps
+/// the table lean (~1 row/branch) even with 25k+ colleges.
+/// exam     ∈ { JEE_MAIN, JEE_ADVANCED, CUET, COMEDK, WBJEE, NEET, CLAT, CAT }
+/// category ∈ { GENERAL, EWS, OBC, SC, ST }   (seeded GENERAL only)
+/// quota    ∈ { ALL_INDIA, HOME_STATE, OTHER_STATE }
+/// gender   ∈ { ALL, FEMALE }
+/// For score-based exams (CUET, CAT) openingRank/closingRank hold the
+/// highest / lowest admitted SCORE (or percentile) instead of a rank.
+model Cutoff {
+  id          String  @id @default(cuid())
+  collegeId   String
+  college     College @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  branchId    String
+  branch      Branch  @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  exam        String
+  year        Int
+  category    String  @default("GENERAL")
+  quota       String  @default("ALL_INDIA")
+  gender      String  @default("ALL")
+  openingRank Int
+  closingRank Int
+
+  @@index([exam, closingRank])
+  @@index([exam, category, quota])
+  @@index([collegeId])
+}
+
+/// A saved prediction run. Stored for logged-in users; guests get results
+/// without persistence. resultJson caches the ranked matches for history.
+model Prediction {
+  id               String   @id @default(cuid())
+  userId           String?
+  user             User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  exam             String
+  rank             Int?
+  score            Float?
+  category         String   @default("GENERAL")
+  homeState        String?
+  gender           String   @default("ALL")
+  budgetMax        Int?
+  twelfthPct       Float?
+  // JSON-encoded array of preferred state names.
+  preferredStates  String   @default("[]")
+  resultJson       String
+  createdAt        DateTime @default(now())
+
+  @@index([userId])
+  @@index([exam])
+}
+
+/// Counselling / admission-service inquiry (sales pipeline).
+/// status ∈ { NEW, CONTACTED, IN_PROGRESS, ENROLLED, CLOSED }
+model Lead {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  name      String
+  email     String
+  phone     String
+  exam      String?
+  rank      Int?
+  budgetMax Int?
+  message   String?
+  source    String   @default("web")
+  status    String   @default("NEW")
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+}
